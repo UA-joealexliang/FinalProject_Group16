@@ -1,8 +1,10 @@
+import java.util.ArrayList;
 
 public class Category {
 	private String name;
-	private double balance;
+	private double charges;
 	private double goal;
+	private ArrayList<Transaction> transactionList = new ArrayList<Transaction>();
 	
 	public void setName(String name) {
 		this.name = name;
@@ -18,8 +20,39 @@ public class Category {
 		return this.goal;
 	}
 	
-	public String getBalance() {
+	public void addTransaction(Transaction transaction) {
+		this.transactionList.add(transaction);
+	}
+	public ArrayList<Transaction> getTransactionList() {
+		return this.transactionList;
+	}
+	
+	public double getCharges() {
 		//calculate based on summing up transactions
+		this.charges = 0;
+		for (Transaction transaction : this.transactionList) {
+			this.charges = this.charges + transaction.getAmount();
+		}
+		return this.charges;
+	}
+	public double calculateBalanceLeft() {
+		return this.goal - this.charges;
+	}
+	public String displayBalanceLeft() {
+		String balanceLeft = "";
+		this.getCharges();
+		double leftOver = this.goal - this.charges;
+		if (leftOver > 0) {
+			balanceLeft = "There is $"+leftOver+" remaining for the category "+this.name;
+		}
+		else if (leftOver == 0) {
+			balanceLeft = "There is no remaining budget for the category "+this.name;
+		}
+		else {
+			leftOver = leftOver*-1;
+			balanceLeft = "You have overspent $"+leftOver+" for the category "+this.name;
+		}
+		return balanceLeft;
 	}
 	
 }
