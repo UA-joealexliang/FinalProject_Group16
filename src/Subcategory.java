@@ -1,10 +1,15 @@
 import java.util.ArrayList;
 
 public class Subcategory {
+	//private Category parent;
 	private String name; //name of the category
 	private double charges; //charges is the total sum of all transactions 
 	private Goal goal;
 	private ArrayList<Transaction> transactionList = new ArrayList<Transaction>();
+	
+	public Subcategory(String name, String parent) {
+		this.name = name;
+	}
 	
 	public void setName(String name) {
 		this.name = name;
@@ -35,8 +40,8 @@ public class Subcategory {
 		}
 		return this.charges;
 	}
-	public double calculateBalanceLeft() {
-		return this.goal.amount - this.charges;
+	public double calculate_goal_deviation() { //this should 
+		return this.goal.amount - this.getCharges();
 	}
 	public String displayBalanceLeft() {
 		String balanceLeft = "";
