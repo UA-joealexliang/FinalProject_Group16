@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class Category {
 	private String name;
 	private double charges;
-	private double goal;
+	private Goal goal;
 	private ArrayList<Transaction> transactionList = new ArrayList<Transaction>();
 	
 	public void setName(String name) {
@@ -13,10 +13,10 @@ public class Category {
 		return this.name;
 	}
 	
-	public void setGoal(double goal) {
+	public void setGoal(Goal goal) {
 		this.goal = goal;
 	}
-	public double getGoal() {
+	public Goal getGoal() {
 		return this.goal;
 	}
 	
@@ -36,12 +36,12 @@ public class Category {
 		return this.charges;
 	}
 	public double calculateBalanceLeft() {
-		return this.goal - this.charges;
+		return this.goal.amount - this.charges;
 	}
 	public String displayBalanceLeft() {
 		String balanceLeft = "";
 		this.getCharges();
-		double leftOver = this.goal - this.charges;
+		double leftOver = this.goal.amount - this.charges;
 		if (leftOver > 0) {
 			balanceLeft = "There is $"+leftOver+" remaining for the category "+this.name;
 		}
