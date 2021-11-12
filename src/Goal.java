@@ -1,4 +1,4 @@
 
 public class Goal {
-	public Integer amount;
+	public double amount;
 }
