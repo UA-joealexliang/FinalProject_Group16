@@ -7,6 +7,10 @@ public class Subcategory {
 	private double availableFunds; //availableFunds is money assigned to the category
 	private ArrayList<Transaction> transactionList = new ArrayList<Transaction>(); //subcategory specific transactions held here
 	
+	public Subcategory(String name, String parent) {
+		this.name = name;
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -36,8 +40,8 @@ public class Subcategory {
 		}
 		return this.charges;
 	}
-	public double calculateBalanceLeft() {
-		return this.goal.amount - this.charges;
+	public double calculate_goal_deviation() { //this should 
+		return this.goal.amount - this.getCharges();
 	}
 	public String displayBalanceLeft() {
 		String balanceLeft = "";
