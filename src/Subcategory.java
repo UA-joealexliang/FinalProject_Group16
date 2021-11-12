@@ -1,8 +1,8 @@
 import java.util.ArrayList;
 
-public class Category {
-	private String name;
-	private double charges;
+public class Subcategory {
+	private String name; //name of the category
+	private double charges; //charges is the total sum of all transactions 
 	private Goal goal;
 	private ArrayList<Transaction> transactionList = new ArrayList<Transaction>();
 	

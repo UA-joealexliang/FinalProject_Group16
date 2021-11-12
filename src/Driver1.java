@@ -1,5 +1,8 @@
 
 public class Driver1 {
-	Category cat1 = new Category();
+	/*
+	TEST1: Create a category named groceries. Add a 
+	 */
+	Subcategory category_Food = new Subcategory();
 	
 }
