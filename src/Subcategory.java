@@ -1,10 +1,11 @@
 import java.util.ArrayList;
 
-public class Category {
-	private String name;
-	private double charges;
-	private Goal goal;
-	private ArrayList<Transaction> transactionList = new ArrayList<Transaction>();
+public class Subcategory {
+	private String name; //name of the category
+	private double charges; //charges is the total sum of all transactions 
+	private Goal goal; //goal is optional, used to save up money for things 
+	private double availableFunds; //availableFunds is money assigned to the category
+	private ArrayList<Transaction> transactionList = new ArrayList<Transaction>(); //subcategory specific transactions held here
 	
 	public void setName(String name) {
 		this.name = name;
