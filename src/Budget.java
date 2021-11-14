@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Budget {
-	public ArrayList<Subcategory> sub_categories = new ArrayList<Subcategory>();
 	public ArrayList<Category> categories = new ArrayList<Category>();
 	public double total_income; 
 	public double unassigned_balance;
@@ -12,15 +11,21 @@ public class Budget {
 		return 2;
 	}
 	public void add_category(String name, Double amount ) {
-		this.categories.add()
-		return;
-	}
-	public void add_subcategory(String parent, String name, double amount) {
-		this.
-		return;
+		Category c = new Category(name);
+		this.categories.add(c);
 	}
 	
-	public void _find()
+	public void add_subcategory(String name, String parent, double amount) {
+		int i = 0;
+		for (Category c: this.categories) {
+			if (c.getName() == name) {
+				c.add_subcategory(name);
+			}
+			i = i+1; 
+		}
+		System.out.println("no matching catories found. check spelling or create a new subcategory" + name);
+	}
+	
 }
 
-//find subcateogry
+

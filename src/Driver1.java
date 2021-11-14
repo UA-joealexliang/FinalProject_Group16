@@ -1,8 +1,10 @@
 
 public class Driver1 {
-	/*
-	TEST1: Create a category named groceries. Add a 
-	 */
-	Subcategory category_Food = new Subcategory();
+	public static void main(String[] args) {
+
+		Budget B = new Budget();
+		B.add_category("Kitchen", 1000.00);
+		B.add_subcategory("groceries", "Kitchen", 100);
+	}
 	
 }
