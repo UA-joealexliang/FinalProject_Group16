@@ -14,6 +14,7 @@ public class TransactionGUI extends JFrame{
 					try {
 						//create object TransactionGUI
 						TransactionGUI frame = new TransactionGUI(); 
+						frame.setVisible(true);
 						
 					}
 					catch (Exception e) {
