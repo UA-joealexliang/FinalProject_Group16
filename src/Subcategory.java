@@ -5,10 +5,10 @@ import java.util.ArrayList;
 // net_ dentoes net 
 public class Subcategory {
 	private String name; //name of the category
-	private Double out_a; //out_a : money out SINCE CATEGORY INCEPTION
-	private Double out_m; //out_m : money out THIS MONTH
-	private Double in_m; //money in THIS MONTH; 
-	private Double net_a; // amount available in subcat; equals: in_a - out_a. 
+	private Double out_a = 0.00; //out_a : money out SINCE CATEGORY INCEPTION
+	private Double out_m = 0.00; //out_m : money out THIS MONTH
+	private Double in_m = 0.00; //money in THIS MONTH; 
+	private Double net_a = 0.00; // amount available in subcat; equals: in_a - out_a. 
 	
 	private Goal goal; //goal is optional, used to save up money for things; goals doesn't actually assign money though. 
 
@@ -97,6 +97,11 @@ public class Subcategory {
 		return balanceLeft;
 	}
 	
+	public boolean thirty_days_since() {
+		return false;
+	}
 	
-	
+	public void print_info() { //name, amount assigned this month, amount available
+		System.out.println(this.getName().toString() + "\t" + this.in_m.toString() + "\t" + this.net_a.toString());
+	}
 }

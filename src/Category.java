@@ -31,6 +31,8 @@ public class Category {
 	}
 	
 	public void print_info() { 
-		return;
+		for (Subcategory sc: this.subcategories) {
+			sc.print_info();
+		}
 	}
 }
