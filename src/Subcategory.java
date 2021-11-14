@@ -6,7 +6,6 @@ import java.util.ArrayList;
 public class Subcategory {
 	private String name; //name of the category
 	private Double out_a = 0.00; //out_a : money out SINCE CATEGORY INCEPTION
-	private Double out_m = 0.00; //out_m : money out THIS MONTH
 	private Double in_m = 0.00; //money in THIS MONTH; 
 	private Double net_a = 0.00; // amount available in subcat; equals: in_a - out_a. 
 	
@@ -17,10 +16,15 @@ public class Subcategory {
 	private Double availableFunds; //availableFunds is money assigned to the category
 	//rename availableFunds to net_a?? 
 	
+	public Subcategory(String name, double amount) {
+		this.name = name;
+		this.in_m = amount;
+		this.net_a += amount;
+	}
+	
 	public Subcategory(String name) {
 		this.name = name;
 	}
-	
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -51,7 +55,7 @@ public class Subcategory {
 	public void addTransaction(Transaction transaction) {
 		this.transactionList.add(transaction);
 		this.net_a -= transaction.getAmount();
-		this.out_m += transaction.getAmount(); //1st way to keep track of monthly spending 
+		this.out_a += transaction.getAmount(); //1st way to keep track of monthly spending 
 		
 	}
 	public ArrayList<Transaction> getTransactionList() {
@@ -61,29 +65,29 @@ public class Subcategory {
 	// public double getCharges(String from, String to){ } 
 	
 	//2nd way to keep track of monthly spending 
-	public Double getCharges() {  
+	public Double get_money_out() {  
 		//calculate based on summing up transactions
 		for (Transaction transaction : this.transactionList) {
-			this.out_m = this.out_m + transaction.getAmount();
+			this.out_a = this.out_a + transaction.getAmount();
 		}
-		return this.out_m;
+		return this.out_a;
 	}
 	
 	
 	public Double calculate_goal_deviation() {  
-		return this.goal.amount - this.getCharges();
+		return this.goal.amount - this.get_money_out();
 	}
 	
 	//rahel made a different version, intends to discuss 
 	public Double calculate_goal_deviation_() {  
-		return this.goal.amount - this.out_m;
+		return this.goal.amount - this.out_a;
 	}
 	
 	
 	public String displayBalanceLeft() {
 		String balanceLeft = "";
-		this.getCharges();
-		double leftOver = this.goal.amount - this.out_m;
+		this.get_money_out();
+		double leftOver = this.goal.amount - this.out_a;
 		if (leftOver > 0) {
 			balanceLeft = "There is $"+leftOver+" remaining for the category "+this.name;
 		}

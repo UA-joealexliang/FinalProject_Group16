@@ -4,7 +4,9 @@ public class Transaction {
 	private String date;
 	private Payee payee;
 	private String description;
-	
+	Transaction(double amt){
+		this.amount = amt;
+	}
 	public void setAmount(double amount) {
 		this.amount = amount;
 	}
