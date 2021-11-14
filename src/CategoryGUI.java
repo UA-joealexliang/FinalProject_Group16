@@ -13,7 +13,8 @@ public class CategoryGUI extends JFrame{
 					//try catch block
 					try {
 						//create object CategoryGUI
-						CategoryGUI frame = new CategoryGUI(); 
+						CategoryGUI frame = new CategoryGUI();
+						frame.setVisible(true);
 						
 					}
 					catch (Exception e) {
