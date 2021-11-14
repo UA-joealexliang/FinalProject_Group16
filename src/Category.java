@@ -30,7 +30,7 @@ public class Category {
 		this.subcategories.add(sc);
 	}
 	
-	public void print_info() { //prints: subcategory_name, assigned_amount,  available_amount
-		for ()
+	public void print_info() { 
+		return;
 	}
 }

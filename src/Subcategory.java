@@ -8,11 +8,14 @@ public class Subcategory {
 	private Double out_a; //out_a : money out SINCE CATEGORY INCEPTION
 	private Double out_m; //out_m : money out THIS MONTH
 	private Double in_m; //money in THIS MONTH; 
-	private Double net_a; // amount availble in subcat; equals: in_a - out_a
-	private Goal goal; //an goal which the user wants to meet; goals doesn't actually assign money though. 
+	private Double net_a; // amount available in subcat; equals: in_a - out_a. 
+	
+	private Goal goal; //goal is optional, used to save up money for things; goals doesn't actually assign money though. 
 
 	// better explained mathematically:
 	private ArrayList<Transaction> transactionList = new ArrayList<Transaction>();
+	private Double availableFunds; //availableFunds is money assigned to the category
+	//rename availableFunds to net_a?? 
 	
 	public Subcategory(String name) {
 		this.name = name;
@@ -21,6 +24,7 @@ public class Subcategory {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	public String getName() {
 		return this.name;
 	}
@@ -54,10 +58,10 @@ public class Subcategory {
 		return this.transactionList;
 	}
 	
-	public double getCharges(String from, String to){ } 
+	// public double getCharges(String from, String to){ } 
 	
 	//2nd way to keep track of monthly spending 
-	public double getCharges() {  
+	public Double getCharges() {  
 		//calculate based on summing up transactions
 		for (Transaction transaction : this.transactionList) {
 			this.out_m = this.out_m + transaction.getAmount();
@@ -94,7 +98,5 @@ public class Subcategory {
 	}
 	
 	
-	public void print_info() {  //prints: subcategory_name, assigned_amount,  available_amount
-		System.out.println(this.getName().toString() + "\t" +  this.in_m.toString() + "\t" + (this.in_m - this.out_m).toString());
-	}
+	
 }
