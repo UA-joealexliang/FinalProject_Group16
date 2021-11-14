@@ -1,19 +1,30 @@
 import java.util.ArrayList;
-
+//NAMING CONVENTIONS:
+// variable_m denotes monthly  
+// variable_a denotes all time  
+// net_ dentoes net 
 public class Subcategory {
 	private String name; //name of the category
-	private double charges; //charges is the total sum of all transactions 
-	private Goal goal; //goal is optional, used to save up money for things 
-	private double availableFunds; //availableFunds is money assigned to the category
-	private ArrayList<Transaction> transactionList = new ArrayList<Transaction>(); //subcategory specific transactions held here
+	private Double out_a; //out_a : money out SINCE CATEGORY INCEPTION
+	private Double out_m; //out_m : money out THIS MONTH
+	private Double in_m; //money in THIS MONTH; 
+	private Double net_a; // amount available in subcat; equals: in_a - out_a. 
 	
-	public Subcategory(String name, String parent) {
+	private Goal goal; //goal is optional, used to save up money for things; goals doesn't actually assign money though. 
+
+	// better explained mathematically:
+	private ArrayList<Transaction> transactionList = new ArrayList<Transaction>();
+	private Double availableFunds; //availableFunds is money assigned to the category
+	//rename availableFunds to net_a?? 
+	
+	public Subcategory(String name) {
 		this.name = name;
 	}
 	
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	public String getName() {
 		return this.name;
 	}
@@ -25,28 +36,54 @@ public class Subcategory {
 		return this.goal;
 	}
 	
+	public void set_monthly_in(Double amount) {
+		this.in_m = amount;
+		this.net_a += amount;
+	}
+	public Double get_monthly_in() {
+		return this.in_m;
+	}
+	
+	public Double get_available() {
+		return this.net_a;
+	}
+	
 	public void addTransaction(Transaction transaction) {
 		this.transactionList.add(transaction);
+		this.net_a -= transaction.getAmount();
+		this.out_m += transaction.getAmount(); //1st way to keep track of monthly spending 
+		
 	}
 	public ArrayList<Transaction> getTransactionList() {
 		return this.transactionList;
 	}
 	
-	public double getCharges() {
+	// public double getCharges(String from, String to){ } 
+	
+	//2nd way to keep track of monthly spending 
+	public Double getCharges() {  
 		//calculate based on summing up transactions
-		this.charges = 0;
 		for (Transaction transaction : this.transactionList) {
-			this.charges = this.charges + transaction.getAmount();
+			this.out_m = this.out_m + transaction.getAmount();
 		}
-		return this.charges;
+		return this.out_m;
 	}
-	public double calculate_goal_deviation() { //this should 
+	
+	
+	public Double calculate_goal_deviation() {  
 		return this.goal.amount - this.getCharges();
 	}
+	
+	//rahel made a different version, intends to discuss 
+	public Double calculate_goal_deviation_() {  
+		return this.goal.amount - this.out_m;
+	}
+	
+	
 	public String displayBalanceLeft() {
 		String balanceLeft = "";
 		this.getCharges();
-		double leftOver = this.goal.amount - this.charges;
+		double leftOver = this.goal.amount - this.out_m;
 		if (leftOver > 0) {
 			balanceLeft = "There is $"+leftOver+" remaining for the category "+this.name;
 		}
@@ -59,5 +96,7 @@ public class Subcategory {
 		}
 		return balanceLeft;
 	}
+	
+	
 	
 }
