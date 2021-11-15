@@ -29,11 +29,11 @@ public class Category {
 		this.subcategories.add(sc);
 	}
 	
-	public void print_info() { 
+	public void print() { 
 		System.out.println(this.name);
 		for (Subcategory sc: this.getSubcategories()) {
 			System.out.print("\t");
-			sc.print_info();
+			sc.print();
 		}
 	}
 
@@ -52,5 +52,15 @@ public class Category {
 		
 		System.out.println("no matching catories found. check spelling or create a new subcategory" + name);
 		return -1;
+	}
+	
+	public void reset() {
+		for (Subcategory sc: this.subcategories) {
+			sc.reset();
+		}
+	}
+	public void delete_subcategory(String name) {
+		int idx = _find_subcategory_idx( name);
+		this.subcategories.remove(idx);
 	}
 }

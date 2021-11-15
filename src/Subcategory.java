@@ -5,11 +5,12 @@ import java.util.ArrayList;
 // net_ dentoes net 
 public class Subcategory {
 	private String name; //name of the category
-	private Double out_a = 0.00; //out_a : money out SINCE CATEGORY INCEPTION
-	private Double in_m = 0.00; //money in THIS MONTH; 
-	private Double net_a = 0.00; // amount available in subcat; equals: in_a - out_a. 
+	protected Double out_a = 0.00; //out_a : money out SINCE CATEGORY INCEPTION
+	protected Double out_m = 0.00; 
+	protected Double in_m = 0.00; //money in THIS MONTH; 
+	protected Double in_a = 0.00; //money in all time
 	
-	private Goal goal; //goal is optional, used to save up money for things; goals doesn't actually assign money though. 
+	protected Goal goal; //goal is optional, used to save up money for things; goals doesn't actually assign money though. 
 
 	// better explained mathematically:
 	private ArrayList<Transaction> transactionList = new ArrayList<Transaction>();
@@ -18,8 +19,7 @@ public class Subcategory {
 	
 	public Subcategory(String name, double amount) {
 		this.name = name;
-		this.in_m = amount;
-		this.net_a += amount;
+		this.in_m += amount;
 	}
 	
 	public Subcategory(String name) {
@@ -42,21 +42,18 @@ public class Subcategory {
 	
 	public void set_monthly_in(Double amount) {
 		this.in_m = amount;
-		this.net_a += amount;
+		this.in_a += amount;
 	}
 	public Double get_monthly_in() {
 		return this.in_m;
 	}
 	
 	public Double get_available() {
-		return this.net_a;
+		return this.in_a - this.out_a;
 	}
 	
 	public void addTransaction(Transaction transaction) {
 		this.transactionList.add(transaction);
-		this.net_a -= transaction.getAmount();
-		this.out_a += transaction.getAmount(); //1st way to keep track of monthly spending 
-		
 	}
 	public ArrayList<Transaction> getTransactionList() {
 		return this.transactionList;
@@ -101,11 +98,14 @@ public class Subcategory {
 		return balanceLeft;
 	}
 	
-	public boolean thirty_days_since() {
-		return false;
+	public void print() { //name, amount assigned this month, amount available
+		Double net_a = this.in_a - this.out_a;
+		System.out.println(this.getName().toString() + "\t" + this.in_m.toString() + "\t" + net_a.toString());
 	}
 	
-	public void print_info() { //name, amount assigned this month, amount available
-		System.out.println(this.getName().toString() + "\t" + this.in_m.toString() + "\t" + this.net_a.toString());
+	public void reset() {
+		this.in_m = 0.00;
+		this.out_m = 0.00;
 	}
+	
 }

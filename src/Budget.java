@@ -8,13 +8,14 @@ import java.util.GregorianCalendar;
 
 public class Budget {
 	public ArrayList<Category> categories = new ArrayList<Category>();
-	public double total_income; 
-	public double unassigned_balance;
-	public double total_assigned;
+	public Double net_a = 0.00; //net all time
+	public Double in_m = 0.00; //monthly income
+	public Double in_unassigned = 0.00;
 	
 	public double get_total_balance( ) {
-		return 2;
+		return 2; //for loop
 	}
+	
 	public void add_category(String name, Double amount ) {
 		Category c = new Category(name);
 		this.categories.add(c);
@@ -22,19 +23,52 @@ public class Budget {
 	
 	public void add_subcategory(String name, String parent, double amount) {
 		int idx = _find_category_idx(parent);
-		if (idx != -1 ) {
+		if (idx != -1 ) { //category named parent exists 
 			Subcategory sc = new Subcategory(name, amount); 
 			this.categories.get(idx).add_subcategory(sc);
 		}
+		else { //need to create a new category, and add subcat to it 
+			Category c = new Category(parent);
+			Subcategory sc = new Subcategory(name, amount);
+			c.subcategories.add(sc);
+			this.categories.add(c);
+			
+		}
 		
 	}
+	public void delete_subcategory(String name, String parent, double amount) {
+		int idx = _find_category_idx(parent);
+		if (idx != -1 ) { //category named parent exists 
+			
+			this.categories.get(idx).delete_subcategory(name);
+		}
+		else { //need to create a new category, and add subcat to it 
+			Category c = new Category(parent);
+			Subcategory sc = new Subcategory(name, amount);
+			c.subcategories.add(sc);
+			this.categories.add(c);
+			
+		}
+		
+	}
+	public void assign(String subcategory, double amount ) {
+		int idx;
+		for (Category c: this.categories) {
+			idx = c._find_subcategory_idx(subcategory);
+			c.subcategories.get(idx).set_monthly_in(amount);
+			this.in_unassigned -= amount;
+			break;
+		}
+		
+	}
+	
 	public void print_category_info(String cat) {
 		Integer idx = _find(cat);
 		if (idx == -1) {
 			return;
 		}
 		else {
-			this.categories.get(idx).print_info();
+			this.categories.get(idx).print();
 		}
 	}
 	
@@ -59,8 +93,13 @@ public class Budget {
 				if (idx == -1) { return;}
 			else {
 				c.getSubcategories().get(idx).addTransaction(T);
+				//update subcategory fields
+				c.getSubcategories().get(idx).out_a -= T.getAmount();
+				c.getSubcategories().get(idx).out_m -= T.getAmount();
+				
 			}
 		}
+		this.net_a -= amount;
 		
 	}
 	private  int _find_category_idx(String cat_name) {
@@ -115,6 +154,29 @@ public class Budget {
 			return reset;
 		}
 	}
+	
+	public void reset() {
+		boolean reset = is_reset_time();
+		if (reset) {
+			for (Category c: this.categories) {
+				c.reset();
+			}
+		}
+	}
+	public void set_monthly_in(Double monthly_income) {
+		this.in_m = monthly_income;
+		this.net_a += monthly_income;
+		this.in_unassigned += monthly_income;
+	}
+	
+	public void print() {
+		System.out.println("Monthly Income" + "\t\t\t "+ "Unassigned Money\t");
+		System.out.println( "   " + this.in_m.toString() + "  " + "\t\t\t\t\t" + this.in_unassigned.toString());
+		for (Category c: this.categories) {
+			c.print();
+		}
+	}
+	
 	
 }//end class def 
 
