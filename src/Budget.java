@@ -17,25 +17,40 @@ public class Budget {
 	}
 	
 	public void add_category(String name, Double amount ) {
-		Category c = new Category(name);
-		this.categories.add(c);
-	}
-	
-	public void add_subcategory(String name, String parent, double amount) {
-		int idx = _find_category_idx(parent);
-		if (idx != -1 ) { //category named parent exists 
-			Subcategory sc = new Subcategory(name, amount); 
-			this.categories.get(idx).add_subcategory(sc);
-		}
-		else { //need to create a new category, and add subcat to it 
-			Category c = new Category(parent);
-			Subcategory sc = new Subcategory(name, amount);
-			c.subcategories.add(sc);
+		if (this.net_a >= amount) {
+			Category c = new Category(name);
 			this.categories.add(c);
-			
+		}
+		else {
+			System.out.println("You have " + this.net_a.toString() + " . You can't assign what you don't have");
+			System.out.println("Options: move money from another category, or assign at most " + this.net_a.toString());
 		}
 		
 	}
+	
+	public void add_subcategory(String name, String parent, double amount) {
+		if (this.net_a >= amount) {
+			int idx = _find_category_idx(parent);
+			if (idx != -1 ) { //category named parent exists 
+				Subcategory sc = new Subcategory(name, amount); 
+				this.categories.get(idx).add_subcategory(sc);
+			}
+			else { //need to create a new category, and add subcat to it 
+				Category c = new Category(parent);
+				Subcategory sc = new Subcategory(name, amount);
+				c.subcategories.add(sc);
+				this.categories.add(c);	
+			}	
+		}
+		else {
+			System.out.println("You have " + this.net_a.toString() + " . You can't assign what you don't have");
+			System.out.println("Options: move money from another category, or assign at most " + this.net_a.toString());
+		}
+	}
+	
+	
+
+	
 	public void delete_subcategory(String name, String parent, double amount) {
 		int idx = _find_category_idx(parent);
 		if (idx != -1 ) { //category named parent exists 
@@ -52,12 +67,18 @@ public class Budget {
 		
 	}
 	public void assign(String subcategory, double amount ) {
-		int idx;
-		for (Category c: this.categories) {
-			idx = c._find_subcategory_idx(subcategory);
-			c.subcategories.get(idx).set_monthly_in(amount);
-			this.in_unassigned -= amount;
-			break;
+		if (this.net_a >= amount) {
+			int idx;
+			for (Category c: this.categories) {
+				idx = c._find_subcategory_idx(subcategory);
+				c.subcategories.get(idx).set_monthly_in(amount);
+				this.in_unassigned -= amount;
+				break;
+			}
+		}
+		else {
+			System.out.println("You have " + this.net_a.toString() + " . You can't assign what you don't have");
+			System.out.println("Options: move money from another category, or assign at most " + this.net_a.toString());
 		}
 		
 	}
