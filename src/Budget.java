@@ -11,12 +11,21 @@ public class Budget {
 	public Double net_a = 0.00; //net all time
 	public Double in_m = 0.00; //monthly income
 	public Double in_unassigned = 0.00;
+	public String name;
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getName() {
+		return this.name;
+	}
 	
 	public double get_total_balance( ) {
 		return 2; //for loop
 	}
 	
-	public void add_category(String name, Double amount ) {
+	//decision to keep amount only in subcategory
+	/*public void add_category(String name, Double amount ) {
 		if (this.net_a >= amount) {//check if we even have this much money in the account
 			Category c = new Category(name);
 			this.categories.add(c);
@@ -26,7 +35,7 @@ public class Budget {
 			System.out.println("Options: move money from another category, or assign at most " + this.net_a.toString());
 		}
 		
-	}
+	}*/
 	public void add_category(String cat ) {	
 		//check if it exists
 		if (this.categories.size() != 0) {
@@ -125,7 +134,7 @@ public class Budget {
 		}
 	}
 	
-	private Integer _find_cat(String cat) { //finds the index of the category whith the name cat. 
+	public Integer _find_cat(String cat) { //finds the index of the category whith the name cat. 
 		Integer i = 0;
 		for (Category c: this.categories) {
 			if (c.getName().equals(cat)) {
@@ -146,7 +155,31 @@ public class Budget {
 		}
 	}
 	
-	private Integer _find_subcat(String subcat) { //finds the index of the CATEGORY that holds subcat
+	public Category getCategory(String name) {
+		Category c = null;
+		for (Category category : this.categories) {
+			if (category.getName() == name) {
+				c = category;
+			}
+		}
+		return c;
+	}
+	
+	public Subcategory getSubcategory(String parent, String child) {
+		Subcategory sc = null;
+		for (Category category : this.categories) {
+			if (category.getName() == parent) {
+				for (Subcategory subcategory : category.subcategories) {
+					if (subcategory.getName() == child) {
+						sc = subcategory;
+					}
+				}
+			}
+		}
+		return sc;
+	}
+	
+	public Integer _find_subcat(String subcat) { //finds the index of the CATEGORY that holds subcat
 		Integer subcat_idx = 0; 
 		Integer catidx = 0;
 		for (Category c: this.categories) {

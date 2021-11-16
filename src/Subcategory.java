@@ -20,6 +20,7 @@ public class Subcategory {
 	public Subcategory(String name, double amount) {
 		this.name = name;
 		this.in_m += amount;
+		this.in_a += amount;
 	}
 	
 	public Subcategory(String name) {
@@ -54,6 +55,11 @@ public class Subcategory {
 	
 	public void addTransaction(Transaction transaction) {
 		this.transactionList.add(transaction);
+		this.in_a -= transaction.getAmount();
+		this.in_m -= transaction.getAmount();
+		this.out_a += transaction.getAmount();
+		this.out_m += transaction.getAmount();
+		
 	}
 	public ArrayList<Transaction> getTransactionList() {
 		return this.transactionList;
