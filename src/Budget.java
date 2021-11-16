@@ -7,20 +7,11 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class Budget {
-	public String name;
 	public ArrayList<Category> categories = new ArrayList<Category>();
 	public Double net_a = 0.00; //net all time
 	public Double in_m = 0.00; //monthly income
 	public Double in_unassigned = 0.00;
 	
-	//getters and setters for username tied to budget
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getName() {
-		return this.name;
-	}
-		
 	public double get_total_balance( ) {
 		return 2; //for loop
 	}
@@ -55,7 +46,7 @@ public class Budget {
 			return;
 		}
 	}
-		
+	
 	public void add_subcategory(String parent, String name, double amount) {
 		if (this.net_a >= amount) { //check if we even have this much money in the account			
 			int idx = _find_category_idx(parent);
@@ -78,14 +69,14 @@ public class Budget {
 			System.out.println("Options: move money from another category, or assign at most " + this.net_a.toString());
 		}
 	}
-		
+	
 	//	FIXME: if we delete a subcateogry, we need to ask the user what they want to do with the money in that account
 	//something like: before you delete this subcateogry, you'll need to reassign your past activity to a new 
-	// 
+    // 
 	public void delete_subcategory(String name, String parent, double amount) {
 		int idx = _find_category_idx(parent);
 		if (idx != -1 ) { //category named parent exists 
-				
+			
 			this.categories.get(idx).delete_subcategory(name);
 		}
 		else { //need to create a new category, and add subcat to it 
@@ -96,16 +87,16 @@ public class Budget {
 			
 		}
 	}
-		
-	public void move(String subcat) {
+	
+	public void move_subcategory(String subcat) {
 		//check exists 
 		int idx = _find_cat(subcat);
-		
+	
 		if (idx != -1) {
-				
+			
 			return; //FIX ME
 		}
-			
+		
 	}
 	public void assign(String subcategory, double amount ) {
 		if (this.net_a >= amount) {
@@ -121,9 +112,9 @@ public class Budget {
 			System.out.println("You have " + this.net_a.toString() + " . You can't assign what you don't have");
 			System.out.println("Options: move money from another category, or assign at most " + this.net_a.toString());
 		}
-			
-	}
 		
+	}
+	
 	public void print_category_info(String cat) {
 		Integer idx = _find_cat(cat);
 		if (idx == -1) {
@@ -133,7 +124,7 @@ public class Budget {
 			this.categories.get(idx).print();
 		}
 	}
-		
+	
 	private Integer _find_cat(String cat) { //finds the index of the category whith the name cat. 
 		Integer i = 0;
 		for (Category c: this.categories) {
@@ -142,11 +133,19 @@ public class Budget {
 			}
 			i = i +1;
 		}
-			
+		
 		//System.out.println("no matching catories found. check spelling or create a new subcategory" + cat);
 		return -1;
 	}
-		
+	public void rename_subcategory(String oldname, String newname) {
+		int idx;
+		for (Category c: this.categories) {
+			idx = c._find_subcategory_idx(oldname);
+			c.subcategories.get(idx).setName(newname);
+			return;
+		}
+	}
+	
 	private Integer _find_subcat(String subcat) { //finds the index of the CATEGORY that holds subcat
 		Integer subcat_idx = 0; 
 		Integer catidx = 0;
@@ -163,7 +162,7 @@ public class Budget {
 		}
 		return catidx;
 	}
-		
+	
 
 	public void add_transaction(String subcat, double amount) {
 		Transaction T = new Transaction(amount);
@@ -175,14 +174,14 @@ public class Budget {
 				
 				c.getSubcategories().get(idx).addTransaction(T);
 				//update subcategory fields
-				c.getSubcategories().get(idx).out_a -= T.getAmount();
-				c.getSubcategories().get(idx).out_m -= T.getAmount();
-					
+				c.getSubcategories().get(idx).out_a += amount;
+				c.getSubcategories().get(idx).out_m += amount;
+				break;
 			}
 		}
 		this.net_a -= amount;
-			
 	}
+	
 	private  int _find_category_idx(String cat_name) {
 		int i = 0;
 		for (Category c: this.categories) {
@@ -194,7 +193,7 @@ public class Budget {
 		System.out.println("no matching categories found. check spelling or create a new subcategory" + cat_name);
 		return -1;
 	}
-		
+	
 	//check if it's the 1st of the month
 	private boolean _is1st() { 
 		boolean is1st = false;
@@ -206,7 +205,7 @@ public class Budget {
 			}
 		return is1st;
 		}
-		
+	
 	//check if it's before a certain  hour   
 	private boolean _is_before(int hour) {
 		boolean is_past_hour = false;
@@ -218,8 +217,8 @@ public class Budget {
 		}
 		return is_past_hour;
 	}
-		
-		
+	
+	
 	//send a cascading reset to category, which will send to subcategory
 	// if it't the 1st of the month and before some early hour, like 1:00 am. 
 	public boolean is_reset_time() { 
