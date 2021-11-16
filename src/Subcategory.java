@@ -99,7 +99,7 @@ public class Subcategory {
 	}
 	
 	public void print() { //name, amount assigned this month, amount available
-		Double net_a = this.in_a - this.out_a;
+		Double net_a = this.in_m - this.out_a;
 		System.out.println(this.getName().toString() + "\t" + this.in_m.toString() + "\t" + net_a.toString());
 	}
 	
