@@ -17,40 +17,62 @@ public class Budget {
 	}
 	
 	public void add_category(String name, Double amount ) {
-		if (this.net_a >= amount) {
+		if (this.net_a >= amount) {//check if we even have this much money in the account
 			Category c = new Category(name);
 			this.categories.add(c);
 		}
-		else {
+		else { //we do not have this amount. 
 			System.out.println("You have " + this.net_a.toString() + " . You can't assign what you don't have");
 			System.out.println("Options: move money from another category, or assign at most " + this.net_a.toString());
 		}
 		
 	}
+	public void add_category(String cat ) {	
+		//check if it exists
+		if (this.categories.size() != 0) {
+			Integer exists = this._find_cat(cat);
+			if (exists == -1) {
+				Category c = new Category(cat);
+				this.categories.add(c);	
+				return;
+			}
+			else {
+				System.out.println("the category "+ cat + "already exists. Not adding "+ cat);
+			}
+		}
+		else {
+			Category c = new Category(cat);
+			this.categories.add(c);
+			return;
+		}
+	}
 	
-	public void add_subcategory(String name, String parent, double amount) {
-		if (this.net_a >= amount) {
+	public void add_subcategory(String parent, String name, double amount) {
+		if (this.net_a >= amount) { //check if we even have this much money in the account			
 			int idx = _find_category_idx(parent);
-			if (idx != -1 ) { //category named parent exists 
+			if (idx != -1 ) { //category parentd name exists 
 				Subcategory sc = new Subcategory(name, amount); 
 				this.categories.get(idx).add_subcategory(sc);
 			}
 			else { //need to create a new category, and add subcat to it 
+				System.out.println("No matching category " + parent + " found. Would you like to "
+						+ "create it?");
+				//FIX ME: need to add user input
 				Category c = new Category(parent);
 				Subcategory sc = new Subcategory(name, amount);
 				c.subcategories.add(sc);
 				this.categories.add(c);	
 			}	
 		}
-		else {
+		else { //we do not have this amount. 
 			System.out.println("You have " + this.net_a.toString() + " . You can't assign what you don't have");
 			System.out.println("Options: move money from another category, or assign at most " + this.net_a.toString());
 		}
 	}
 	
-	
-
-	
+	//	FIXME: if we delete a subcateogry, we need to ask the user what they want to do with the money in that account
+	//something like: before you delete this subcateogry, you'll need to reassign your past activity to a new 
+    // 
 	public void delete_subcategory(String name, String parent, double amount) {
 		int idx = _find_category_idx(parent);
 		if (idx != -1 ) { //category named parent exists 
@@ -63,6 +85,16 @@ public class Budget {
 			c.subcategories.add(sc);
 			this.categories.add(c);
 			
+		}
+	}
+	
+	public void move_subcategory(String subcat) {
+		//check exists 
+		int idx = _find_cat(subcat);
+	
+		if (idx != -1) {
+			
+			return; //FIX ME
 		}
 		
 	}
@@ -84,7 +116,7 @@ public class Budget {
 	}
 	
 	public void print_category_info(String cat) {
-		Integer idx = _find(cat);
+		Integer idx = _find_cat(cat);
 		if (idx == -1) {
 			return;
 		}
@@ -93,19 +125,37 @@ public class Budget {
 		}
 	}
 	
-	private Integer _find(String name) {
+	private Integer _find_cat(String cat) { //finds the index of the category whith the name cat. 
 		Integer i = 0;
 		for (Category c: this.categories) {
-			if (c.getName().equals(name)) {
+			if (c.getName().equals(cat)) {
 				return i;
 			}
 			i = i +1;
 		}
 		
-		System.out.println("no matching catories found. check spelling or create a new subcategory" + name);
+		//System.out.println("no matching catories found. check spelling or create a new subcategory" + cat);
 		return -1;
 	}
 	
+	private Integer _find_subcat(String subcat) { //finds the index of the CATEGORY that holds subcat
+		Integer subcat_idx = 0; 
+		Integer catidx = 0;
+		for (Category c: this.categories) {
+			subcat_idx = c._find_subcategory_idx(subcat);
+			if (subcat_idx == -1) {
+				catidx += 1;
+				continue;
+			}
+		}
+		if (subcat_idx == -1) { //subcategory was not found in any of the categories 
+			System.out.println("no matching catories found. check spelling or create a new subcategory" + subcat);
+
+		}
+		return catidx;
+	}
+	
+
 	public void add_transaction(String subcat, double amount) {
 		Transaction T = new Transaction(amount);
 		int idx = 0;
@@ -113,6 +163,7 @@ public class Budget {
 			idx = c._find_subcategory_idx(subcat);
 				if (idx == -1) { return;}
 			else {
+				
 				c.getSubcategories().get(idx).addTransaction(T);
 				//update subcategory fields
 				c.getSubcategories().get(idx).out_a -= T.getAmount();
@@ -125,7 +176,6 @@ public class Budget {
 	}
 	private  int _find_category_idx(String cat_name) {
 		int i = 0;
-		
 		for (Category c: this.categories) {
 			if (c.getName().equals(cat_name)) {
 				return i;
@@ -166,7 +216,6 @@ public class Budget {
 	public boolean is_reset_time() { 
 		while(true) {
 			boolean reset = false;
-			int hour = 1;
 			boolean is_past_hour = _is_before(1);
 			boolean is1st = _is1st();
 			if (is_past_hour & is1st ) {
@@ -197,6 +246,8 @@ public class Budget {
 			c.print();
 		}
 	}
+	
+	
 	
 	
 }//end class def 

@@ -28,6 +28,7 @@ public class Category {
 	public void add_subcategory(Subcategory sc) {
 		this.subcategories.add(sc);
 	}
+
 	
 	public void print() { 
 		System.out.println(this.name);
@@ -42,16 +43,20 @@ public class Category {
 	}
 	
 	protected Integer _find_subcategory_idx(String name) {
-		Integer i = 0;
-		for (Subcategory c: this.subcategories) {
-			if (c.getName().equals(name)) {
-				return i;
+		if (this.subcategories.size() != 0) {
+			Integer i = 0;
+			for (Subcategory c: this.subcategories) {
+				if (c.getName().equals(name)) {
+					return i;
+				}
+				i = i +1;
 			}
-			i = i +1;
+			
+			System.out.println("no matching catories found. check spelling or create a new subcategory " + name);
+			return -1;
 		}
+		return 0;
 		
-		System.out.println("no matching catories found. check spelling or create a new subcategory" + name);
-		return -1;
 	}
 	
 	public void reset() {
@@ -63,4 +68,5 @@ public class Category {
 		int idx = _find_subcategory_idx( name);
 		this.subcategories.remove(idx);
 	}
+	
 }

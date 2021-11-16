@@ -108,4 +108,23 @@ public class Subcategory {
 		this.out_m = 0.00;
 	}
 	
+	public void move(Subcategory sc) {
+		 //move transactions
+		for (Transaction t: this.transactionList) {
+			sc.addTransaction(t);
+		}
+		sc.in_m += this.in_m ; //transfer assigned amount
+		sc.out_a += (this.in_a - this.out_a); //transfer available amount
+
+		//delete this's fields just in case, even tho we're deleting it from category and budget. 
+		this.goal = null;
+		this.in_a = 0.00;
+		this.in_m = 0.00;
+		this.out_a = 0.00;
+		this.out_m = 0.00;
+		this.name = " ";
+		this.transactionList = null;
+	}
+	
+	
 }
