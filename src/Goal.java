@@ -2,13 +2,10 @@
 public class Goal {
 	public double amount;
 	
-	public void setAmount(double amount) {
+	public void set_amount(double amount) {
 		this.amount = amount;
 	}
-	public double getAmount() {
+	public double get_amount() {
 		return this.amount;
-	}
-	public void incAmount(double incr) {
-		this.amount += incr;
 	}
 }
