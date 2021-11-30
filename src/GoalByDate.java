@@ -33,4 +33,7 @@ public class  GoalByDate extends Goal {
 		this.amount = amount;
 		this.amt_m = calc_amt_m();
 	}
+	Date get_date() {
+		return this.goalDate;
+	}
 }
