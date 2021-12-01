@@ -4,6 +4,7 @@ import java.awt.event.*;
 import java.awt.EventQueue;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 public class MainGUI extends JFrame {
 	//declare the private variables
 	private JPanel contentPane;
@@ -71,7 +72,7 @@ public class MainGUI extends JFrame {
 		categoryPane.add(Label3);
 		categoryPane.add(AddCategory);
 		//add components to the frame 
-		frame.getContentPane().add(BorderLayout.SOUTH, contentPane);//sets button to the bottom
-		frame.getContentPane().add(BorderLayout.NORTH, categoryPane);//sets button to the bottom
+		this.getContentPane().add(BorderLayout.SOUTH, contentPane);//sets button to the bottom
+		this.getContentPane().add(BorderLayout.NORTH, categoryPane);//sets button to the bottom
 	}
 }

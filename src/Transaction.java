@@ -1,12 +1,27 @@
+import java.time.LocalDate;
+import java.util.Date;
 
 public class Transaction {
+	private int id;
 	private double amount;
-	private String date;
+	private LocalDate date;
 	private Payee payee;
 	private String description;
+	
+	//constructors
+	Transaction() {}
 	Transaction(double amt){
 		this.amount = amt;
 	}
+	
+	//id is unimplemented, and may not be needed
+	public void setId(int id) {
+		this.id = id;
+	}
+	public int getId() {
+		return this.id;
+	}
+	
 	public void setAmount(double amount) {
 		this.amount = amount;
 	}
@@ -14,10 +29,10 @@ public class Transaction {
 		return this.amount;
 	}
 	
-	public void setDate(String date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
-	public String getDate() {
+	public LocalDate getDate() {
 		return this.date;
 	}
 	
