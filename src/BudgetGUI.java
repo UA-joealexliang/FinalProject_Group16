@@ -124,12 +124,12 @@ public class BudgetGUI extends JFrame {
 	}
 	private class SaveDataListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			//Budget.saveData(budget);
+			Budget.saveData(budget);
 		}
 	}
 	private class LoadDataListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			//budget = Budget.loadData();
+			budget = Budget.loadData();
 		}
 	}
 	
@@ -170,15 +170,15 @@ public class BudgetGUI extends JFrame {
 					PrintStream pStream = new PrintStream(bOutput);
 					PrintStream old = System.out; //save old output stream config
 					System.setOut(pStream);
-					//boolean success = budget.add_category(catName);
+					boolean success = budget.add_category(catName);
 					System.out.flush(); 
 					System.setOut(old); //return to old output stream (console)
-					/*if (success == true) {
+					if (success == true) {
 						JOptionPane.showMessageDialog(null, "New Category Created: "+catName, "Success", JOptionPane.INFORMATION_MESSAGE);
 					}
 					else {
 						JOptionPane.showMessageDialog(null, bOutput.toString(), "Error", JOptionPane.ERROR_MESSAGE);
-					}*/
+					}
 				}
 				catch (Exception exception) {
 					JOptionPane.showMessageDialog(null, exception, "Error", JOptionPane.ERROR_MESSAGE);
@@ -250,7 +250,7 @@ public class BudgetGUI extends JFrame {
 						//create transaction
 						Transaction newTransaction = new Transaction();
 						newTransaction.setDate(date);
-						//newTransaction.setPayee(transPayee); //FIXME
+						newTransaction.setPayee(transPayee); //FIXME
 						newTransaction.setAmount(transAmount);
 						newTransaction.setDescription(transDesc);
 						JOptionPane.showMessageDialog(null, "New Transaction Created:"+"\nDate: "+transDate+"\nPaid To: "+transPayee+"\nAmount Paid: "+transAmount+"\nDescription: "+transDesc, "Success", JOptionPane.INFORMATION_MESSAGE);
