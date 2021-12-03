@@ -29,7 +29,7 @@ public class Driver2 {
 		//System.out.println("\nBudget after adding a transaction");
 		//B.print();	
 		//System.out.println("\ntesting rename");
-		//B.rename_subcategory("groceries", "Groceries");
+		B.rename_subcategory("groceries", "Groceries");
 		//B.print();
 		Subcategory sc1 = B._find_subcat("Groceries"); //find subcat works!!
 
