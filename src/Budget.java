@@ -14,6 +14,7 @@ import java.util.GregorianCalendar;
 
 public class Budget implements Serializable{
 	public ArrayList<Category> categories = new ArrayList<Category>();
+	public ArrayList<Payee> payeeList = new ArrayList<Payee>();
 	public Double net_a = 0.00; //net all time
 	public Double in_m = 0.00; //monthly income
 	public Double in_unassigned = 0.00;
@@ -54,7 +55,7 @@ public class Budget implements Serializable{
 				return true;
 			}
 			else {
-				System.out.println("the category "+ cat + "already exists. Not adding "+ cat);
+				System.out.println("the category "+ cat + " already exists.");
 				return false;
 			}
 		}
@@ -75,15 +76,15 @@ public class Budget implements Serializable{
 				return true;
 			}
 			else { //need to create a new category, and add subcat to it 
-				System.out.println("No matching category " + parent + " found. Would you like to "
-						+ "create it?");
+				System.out.println("No matching category " + parent + " found.");
 				//FIX ME: need to add user input
-				Category c = new Category(parent);
-				Subcategory sc = new Subcategory(name, amount);
-				c.subcategories.add(sc);
-				this.categories.add(c);	
-				this.in_unassigned -= amount;
-				return true;
+				//Category c = new Category(parent);
+				//Subcategory sc = new Subcategory(name, amount);
+				//c.subcategories.add(sc);
+				//this.categories.add(c);	
+				//this.in_unassigned -= amount;
+				//return true;
+				return false;
 			}	
 		}
 		else { //we do not have this amount. 
@@ -223,9 +224,9 @@ public class Budget implements Serializable{
 	public Subcategory getSubcategory(String parent, String child) {
 		Subcategory sc = null;
 		for (Category category : this.categories) {
-			if (category.getName() == parent) {
+			if (parent.equals(category.getName())) {
 				for (Subcategory subcategory : category.subcategories) {
-					if (subcategory.getName() == child) {
+					if (child.equals(subcategory.getName())) {
 						sc = subcategory;
 					}
 				}
@@ -252,7 +253,15 @@ public class Budget implements Serializable{
 		return catidx;
 	}
 	
-	
+	public Payee getPayee(String payeeName) {
+		Payee p = null;
+		for (Payee payee : this.payeeList) {
+			if (payeeName.equals(payee.getName())) {
+				p = payee;
+			}
+		}
+		return p;
+	}
 
 	public void add_transaction(String subcat, double amount) {
 		Transaction T = new Transaction(amount);

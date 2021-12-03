@@ -23,15 +23,38 @@ public class BudgetGUI extends JFrame {
 	private JMenuItem addCategoryItem;
 	private JMenuItem addSubcategoryItem;
 	private JMenuItem addTransactionItem;
+	private JMenuItem addPayeeItem;
+	private JMenuItem addMonthlyIncomeItem;
 	//viewMenu components
 	private JMenu viewMenu;
 	private JMenuItem printCategoryInfoItem;
 	private JMenuItem printTransactionInfoItem;
 	
+	//addMonthlyIncomeItem
+	private JPanel addMonthlyIncomePanel;
+	private JLabel monthlyincomeAmountLabel;
+	private JTextField monthlyincomeAmountField;
+	
+	//addPayee components
+	private JPanel newPayeePanel;
+	private JLabel payeeNameLabel;
+	private JLabel payeeDescLabel;
+	private JTextField payeeNameField;
+	private JTextField payeeDescField;
+	
 	//addCategory components
 	private JPanel newCategoryPanel;
 	private JLabel catNameLabel;
 	private JTextField catNameField;
+	
+	//addSubcategory components
+	private JPanel newSubcategoryPanel;
+	private JLabel subcatNameLabel;
+	private JLabel subcatAmountLabel;
+	private JLabel subcatParentLabel;
+	private JTextField subcatNameField;
+	private JTextField subcatAmountField;
+	private JTextField subcatParentField;
 	
 	//addTransaction components
 	private JPanel newTransactionPanel;
@@ -124,12 +147,12 @@ public class BudgetGUI extends JFrame {
 	}
 	private class SaveDataListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			Budget.saveData(budget);
+			Budget.save_data(budget);
 		}
 	}
 	private class LoadDataListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			budget = Budget.loadData();
+			budget = Budget.load_data();
 		}
 	}
 	
@@ -144,10 +167,16 @@ public class BudgetGUI extends JFrame {
 		addSubcategoryItem.addActionListener(new AddSubcategoryListener());
 		addTransactionItem = new JMenuItem("Add Transaction");
 		addTransactionItem.addActionListener(new AddTransactionListener());
+		addPayeeItem = new JMenuItem("Add Payee");
+		addPayeeItem.addActionListener(new AddPayeeListener());
+		addMonthlyIncomeItem = new JMenuItem("Add Paycheck");
+		addMonthlyIncomeItem.addActionListener(new AddMonthlyIncomeListener());
 		//add menu items to the category menu
  		categoryMenu.add(addCategoryItem);
  		categoryMenu.add(addSubcategoryItem);
+ 		categoryMenu.add(addMonthlyIncomeItem);
  		categoryMenu.add(addTransactionItem);
+ 		categoryMenu.add(addPayeeItem);
 	}
 	private class AddCategoryListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
@@ -188,7 +217,65 @@ public class BudgetGUI extends JFrame {
 	}
 	private class AddSubcategoryListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			//FIXME
+			newSubcategoryPanel = new JPanel();
+			newSubcategoryPanel.setLayout(new BoxLayout(newSubcategoryPanel, BoxLayout.Y_AXIS)); //vertical
+			subcatParentLabel = new JLabel("Parent Category Name:");
+			subcatParentField = new JTextField();
+			subcatNameLabel = new JLabel("Subcategory Name:");
+			subcatNameField = new JTextField();
+			subcatAmountLabel = new JLabel("Amount Assigned Per Month:");
+			subcatAmountField = new JTextField();
+			newSubcategoryPanel.add(subcatParentLabel);
+			newSubcategoryPanel.add(subcatParentField);
+			newSubcategoryPanel.add(subcatNameLabel);
+			newSubcategoryPanel.add(subcatNameField);
+			newSubcategoryPanel.add(subcatAmountLabel);
+			newSubcategoryPanel.add(subcatAmountField);
+			int result = JOptionPane.showConfirmDialog(null, newSubcategoryPanel, "Create New Subcategory", JOptionPane.OK_CANCEL_OPTION);
+			if (result == JOptionPane.OK_OPTION) {
+				try {
+					String subcatParent = subcatParentField.getText();
+					String subcatName = subcatNameField.getText();
+					double subcatAmount = Double.parseDouble(subcatAmountField.getText());
+					ByteArrayOutputStream bOutput = new ByteArrayOutputStream(); //new storage for outputstream
+					PrintStream pStream = new PrintStream(bOutput);
+					PrintStream old = System.out; //save old output stream config
+					System.setOut(pStream);
+					boolean success = budget.add_subcategory(subcatParent, subcatName, subcatAmount);
+					System.out.flush(); 
+					System.setOut(old); //return to old output stream (console)
+					if (success == true) {
+						JOptionPane.showMessageDialog(null, "New Subcategory Created: \""+subcatName+"\" under parent Category \""+subcatParent+"\" with a monthly budget of $"+subcatAmount, "Success", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else {
+						JOptionPane.showMessageDialog(null, bOutput.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				catch (Exception exception) {
+					JOptionPane.showMessageDialog(null, exception, "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		}
+	}
+	private class AddMonthlyIncomeListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			addMonthlyIncomePanel = new JPanel();
+			addMonthlyIncomePanel.setLayout(new BoxLayout(addMonthlyIncomePanel, BoxLayout.Y_AXIS)); //vertical
+			monthlyincomeAmountLabel = new JLabel("Paycheck Amount:");
+			monthlyincomeAmountField = new JTextField();
+			addMonthlyIncomePanel.add(monthlyincomeAmountLabel);
+			addMonthlyIncomePanel.add(monthlyincomeAmountField);
+			int result = JOptionPane.showConfirmDialog(null, addMonthlyIncomePanel, "Add New Paycheck", JOptionPane.OK_CANCEL_OPTION);
+			if (result == JOptionPane.OK_OPTION) {
+				try {
+					double paycheckAmount = Double.parseDouble(monthlyincomeAmountField.getText());
+					budget.set_monthly_in(paycheckAmount);
+					JOptionPane.showMessageDialog(null, "New paycheck amount $"+paycheckAmount+" has been added. Your new total balance is $"+budget.net_a, "Paycheck Added", JOptionPane.INFORMATION_MESSAGE);
+				}
+				catch (Exception exception) {
+					JOptionPane.showMessageDialog(null, exception, "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
 		}
 	}
 	private class AddTransactionListener implements ActionListener {
@@ -246,14 +333,48 @@ public class BudgetGUI extends JFrame {
 					Subcategory subcategory = budget.getSubcategory(transCat, transSubcat);
 					System.out.flush(); 
 					System.setOut(old); //return to old output stream (console)
+					Payee payee = budget.getPayee(transPayee);
 					if (subcategory != null) {
-						//create transaction
-						Transaction newTransaction = new Transaction();
-						newTransaction.setDate(date);
-						newTransaction.setPayee(transPayee); //FIXME
-						newTransaction.setAmount(transAmount);
-						newTransaction.setDescription(transDesc);
-						JOptionPane.showMessageDialog(null, "New Transaction Created:"+"\nDate: "+transDate+"\nPaid To: "+transPayee+"\nAmount Paid: "+transAmount+"\nDescription: "+transDesc, "Success", JOptionPane.INFORMATION_MESSAGE);
+						if (payee != null) {
+							//create transaction
+							Transaction newTransaction = new Transaction();
+							newTransaction.setDate(date);
+							newTransaction.setPayee(payee);
+							newTransaction.setAmount(transAmount);
+							newTransaction.setDescription(transDesc);
+							subcategory.addTransaction(newTransaction);
+							JOptionPane.showMessageDialog(null, "New Transaction Created:"+"\nDate: "+transDate+"\nPaid To: "+transPayee+"\nAmount Paid: "+transAmount+"\nDescription: "+transDesc, "Success", JOptionPane.INFORMATION_MESSAGE);
+						}
+						else {
+							int result2 = JOptionPane.showConfirmDialog(null, "Add \""+transPayee+"\" as a new payee?", "Alert", JOptionPane.OK_CANCEL_OPTION);
+							if (result2 == JOptionPane.OK_OPTION) {
+								newPayeePanel = new JPanel();
+								newPayeePanel.setLayout(new BoxLayout(newPayeePanel, BoxLayout.Y_AXIS)); //vertical
+								payeeNameLabel = new JLabel("Enter payee name:");
+								payeeNameField = new JTextField(transPayee);
+								payeeDescLabel = new JLabel("Enter payee description (optional):");
+								payeeDescField = new JTextField();
+								newPayeePanel.add(payeeNameLabel);
+								newPayeePanel.add(payeeNameField);
+								newPayeePanel.add(payeeDescLabel);
+								newPayeePanel.add(payeeDescField);
+								int result3 = JOptionPane.showConfirmDialog(null, newPayeePanel, "Add New Payee", JOptionPane.OK_CANCEL_OPTION);
+								if (result3 == JOptionPane.OK_OPTION) {
+									payee = new Payee();
+									payee.setName(payeeNameField.getText());
+									payee.setDescription(payeeDescField.getText());
+									budget.payeeList.add(payee);
+									JOptionPane.showMessageDialog(null, "Successfully created new payee \""+payeeNameField.getText()+"\"", "Success", JOptionPane.INFORMATION_MESSAGE);
+									Transaction newTransaction = new Transaction();
+									newTransaction.setDate(date);
+									newTransaction.setPayee(payee);
+									newTransaction.setAmount(transAmount);
+									newTransaction.setDescription(transDesc);
+									subcategory.addTransaction(newTransaction);
+									JOptionPane.showMessageDialog(null, "New Transaction Created:"+"\nDate: "+transDate+"\nPaid To: "+transPayee+"\nAmount Paid: "+transAmount+"\nDescription: "+transDesc, "Success", JOptionPane.INFORMATION_MESSAGE);
+								}
+							}
+						}
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "Transaction could not be created, Category \""+transCat+"\" or Subcategory \""+transSubcat+"\" could not be found", "Error", JOptionPane.ERROR_MESSAGE);
@@ -265,6 +386,28 @@ public class BudgetGUI extends JFrame {
 			}
 		}
 	}	
+	private class AddPayeeListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			newPayeePanel = new JPanel();
+			newPayeePanel.setLayout(new BoxLayout(newPayeePanel, BoxLayout.Y_AXIS)); //vertical
+			payeeNameLabel = new JLabel("Enter payee name:");
+			payeeNameField = new JTextField();
+			payeeDescLabel = new JLabel("Enter payee description (optional):");
+			payeeDescField = new JTextField();
+			newPayeePanel.add(payeeNameLabel);
+			newPayeePanel.add(payeeNameField);
+			newPayeePanel.add(payeeDescLabel);
+			newPayeePanel.add(payeeDescField);
+			int result = JOptionPane.showConfirmDialog(null, newPayeePanel, "Add New Payee", JOptionPane.OK_CANCEL_OPTION);
+			if (result == JOptionPane.OK_OPTION) {
+				Payee payee = new Payee();
+				payee.setName(payeeNameField.getText());
+				payee.setDescription(payeeDescField.getText());
+				budget.payeeList.add(payee);
+				JOptionPane.showMessageDialog(null, "Successfully created new payee \""+payeeNameField.getText()+"\"", "Success", JOptionPane.INFORMATION_MESSAGE);
+			}
+		}
+	}
 	
 	//viewMenu
 	private void buildViewMenu() {
