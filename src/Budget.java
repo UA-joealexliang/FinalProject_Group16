@@ -93,6 +93,22 @@ public class Budget implements Serializable{
 		}
 	}
 	
+	public boolean move_money(String src, String dst) {
+		Subcategory Src = this._find_subcat(src);
+		Subcategory Dst = this._find_subcat(dst);
+		if (Src == null) {
+			System.out.println("the subcategory " + src + " doesn't exist.");
+			return false;
+		}
+		if (Dst == null) {
+			System.out.println("the subcategory " + dst + " doesn't exist.");
+			return false;
+		}
+		else {
+			Src.in_a += Dst.in_a - Dst.out_a;
+			return true;
+		}
+	}
 	
 	
 	public void assign(String subcategory, double amount ) {
