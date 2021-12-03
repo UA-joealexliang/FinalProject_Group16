@@ -52,11 +52,10 @@ public class Driver1 {
 		b1.add_category("Large purchases");
 		b1.add_subcategory("Large purchases", "Car", 0);
 		Goal car_goal = new Goal();
-		car_goal.setAmount(9000);
-		car_goal.incAmount(1000);
+		car_goal.set_amount(9000);
 		Subcategory sub_Car = b1.getSubcategory("Large purchases", "Car");
 		sub_Car.setGoal(car_goal);
-		System.out.println("Car goal: "+sub_Car.goal.getAmount());
+		System.out.println("Car goal: "+sub_Car.goal.get_amount());
 		
 		/*
 		 * TEST4: Add a transaction to groceries subcategory

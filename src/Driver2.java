@@ -26,13 +26,20 @@ public class Driver2 {
 		B.print();	
 	//adding transactions
 		B.add_transaction("groceries", 100.00);
-		System.out.println("\nBudget after adding a transaction");
-		B.print();	
-		System.out.println("\ntesting rename");
-		B.rename_subcategory("groceries", "Groceries");
-		B.print();
-		
+		//System.out.println("\nBudget after adding a transaction");
+		//B.print();	
+		//System.out.println("\ntesting rename");
+		//B.rename_subcategory("groceries", "Groceries");
+		//B.print();
+		Subcategory sc1 = B._find_subcat("Groceries"); //find subcat works!!
+
 		System.out.println("\ntesting delete");
+		//B.print();
+		//Integer cat = B._find_subcat_idx("Groceries"); //find subcatidx works!!
+		//delete subcategory
+		B.add_subcategory("Kitchen", "Booze", 300.00);
+		B.print();
+		B.delete_subcategory("Booze", "Groceries");
 		B.print();
 	}
 	

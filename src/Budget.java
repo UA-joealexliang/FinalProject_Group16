@@ -1,3 +1,9 @@
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -6,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class Budget {
+public class Budget implements Serializable{
 	public ArrayList<Category> categories = new ArrayList<Category>();
 	public Double net_a = 0.00; //net all time
 	public Double in_m = 0.00; //monthly income
@@ -36,32 +42,36 @@ public class Budget {
 		}
 		
 	}*/
-	public void add_category(String cat ) {	
+	
+	public boolean add_category(String cat ) {	
+		//returns true if category was succesfully added, false else
 		//check if it exists
 		if (this.categories.size() != 0) {
-			Integer exists = this._find_cat(cat);
+			Integer exists = this._find_cat_idx_c(cat);
 			if (exists == -1) {
 				Category c = new Category(cat);
 				this.categories.add(c);	
-				return;
+				return true;
 			}
 			else {
 				System.out.println("the category "+ cat + "already exists. Not adding "+ cat);
+				return false;
 			}
 		}
 		else {
 			Category c = new Category(cat);
 			this.categories.add(c);
-			return;
+			return true;
 		}
 	}
 	
-	public void add_subcategory(String parent, String name, double amount) {
+	public boolean add_subcategory(String parent, String name, double amount) {
 		if (this.net_a >= amount) { //check if we even have this much money in the account			
-			int idx = _find_category_idx(parent);
+			int idx = _find_category_idx_c(parent);
 			if (idx != -1 ) { //category parentd name exists 
 				Subcategory sc = new Subcategory(name, amount); 
 				this.categories.get(idx).add_subcategory(sc);
+				return true;
 			}
 			else { //need to create a new category, and add subcat to it 
 				System.out.println("No matching category " + parent + " found. Would you like to "
@@ -71,42 +81,18 @@ public class Budget {
 				Subcategory sc = new Subcategory(name, amount);
 				c.subcategories.add(sc);
 				this.categories.add(c);	
+				return true;
 			}	
 		}
 		else { //we do not have this amount. 
 			System.out.println("You have " + this.net_a.toString() + " . You can't assign what you don't have");
 			System.out.println("Options: move money from another category, or assign at most " + this.net_a.toString());
+			return false;
 		}
 	}
 	
-	//	FIXME: if we delete a subcateogry, we need to ask the user what they want to do with the money in that account
-	//something like: before you delete this subcateogry, you'll need to reassign your past activity to a new 
-    // 
-	public void delete_subcategory(String name, String parent, double amount) {
-		int idx = _find_category_idx(parent);
-		if (idx != -1 ) { //category named parent exists 
-			
-			this.categories.get(idx).delete_subcategory(name);
-		}
-		else { //need to create a new category, and add subcat to it 
-			Category c = new Category(parent);
-			Subcategory sc = new Subcategory(name, amount);
-			c.subcategories.add(sc);
-			this.categories.add(c);
-			
-		}
-	}
 	
-	public void move_subcategory(String subcat) {
-		//check exists 
-		int idx = _find_cat(subcat);
 	
-		if (idx != -1) {
-			
-			return; //FIX ME
-		}
-		
-	}
 	public void assign(String subcategory, double amount ) {
 		if (this.net_a >= amount) {
 			int idx;
@@ -125,7 +111,7 @@ public class Budget {
 	}
 	
 	public void print_category_info(String cat) {
-		Integer idx = _find_cat(cat);
+		Integer idx = _find_cat_idx_c(cat);
 		if (idx == -1) {
 			return;
 		}
@@ -134,7 +120,7 @@ public class Budget {
 		}
 	}
 	
-	public Integer _find_cat(String cat) { //finds the index of the category whith the name cat. 
+	public Integer _find_cat_idx_c(String cat) { //finds the index of the category whith the name cat. 
 		Integer i = 0;
 		for (Category c: this.categories) {
 			if (c.getName().equals(cat)) {
@@ -146,13 +132,64 @@ public class Budget {
 		//System.out.println("no matching catories found. check spelling or create a new subcategory" + cat);
 		return -1;
 	}
+	public Category _find_cat(String subcat) { //finds the index of the CATEGORY that holds subcat
+		Subcategory sc = null;
+		for (Category c: this.categories) {
+			 sc = c._find_subcategory(subcat);
+			if (sc==null) { 
+				continue;
+			}
+			return c;
+		}
+		 //subcategory was not found in any of the categories 
+			//System.out.println("no matching categories found. check spelling or create a new subcategory" + subcat);
+			return null;
+	}
+	
+	public Subcategory _find_subcat(String subcat) { //finds the index of the CATEGORY that holds subcat
+		Subcategory sc = null;
+		Category cc = null;
+		for (Category c: this.categories) {
+			 sc = c._find_subcategory(subcat);
+			if (sc==null) { 
+				continue;
+			}
+			cc = c;
+			return cc._find_subcategory(subcat);
+		}
+		 return null;
+	}
 	public void rename_subcategory(String oldname, String newname) {
-		int idx;
+		Integer idx;
 		for (Category c: this.categories) {
 			idx = c._find_subcategory_idx(oldname);
-			c.subcategories.get(idx).setName(newname);
-			return;
+			if (!idx.equals(-1)) {
+				c.subcategories.get(idx).setName(newname);
+				return;
+			}
 		}
+		System.out.println("subcateogry " + oldname + " does not exist.");
+	}
+	//FIXME: if we delete a subcateogry, we need to ask the user what they want to do with the money in that account
+	//something like: before you delete this subcateogry, you'll need to reassign your past activity to a new 
+	public boolean delete_subcategory(String to_del, String to_move) { 
+		Subcategory ToDel = this._find_subcat(to_del);
+		Subcategory ToMove = this._find_subcat(to_move);
+		if (ToDel == null ) { //sc DNE
+			System.out.println( to_del + " does not exist in budget.");
+			return false;
+		}
+		if (ToMove == null ) { //to_move DNE
+			System.out.println( to_move + " does not exist in budget.");
+			return false;
+		}
+		else {
+			ToDel.move(ToMove);
+			//now, actually delete the category from budget
+			Integer cat_idx = this._find_cat_idx_s(to_move);
+			this.categories.get(cat_idx).delete_subcategory(to_del);
+			return true;
+		}		
 	}
 	
 	public Category getCategory(String name) {
@@ -179,22 +216,24 @@ public class Budget {
 		return sc;
 	}
 	
-	public Integer _find_subcat(String subcat) { //finds the index of the CATEGORY that holds subcat
+	
+	public Integer _find_cat_idx_s(String subcat) { //finds the index of the CATEGORY that holds subcat
 		Integer subcat_idx = 0; 
 		Integer catidx = 0;
 		for (Category c: this.categories) {
 			subcat_idx = c._find_subcategory_idx(subcat);
-			if (subcat_idx == -1) {
+			if (subcat_idx.equals(-1)) { 
 				catidx += 1;
 				continue;
 			}
+			return catidx;
 		}
-		if (subcat_idx == -1) { //subcategory was not found in any of the categories 
-			System.out.println("no matching catories found. check spelling or create a new subcategory" + subcat);
-
+		if (subcat_idx.equals( -1)) { //subcategory was not found in any of the categories 
+			System.out.println("no matching categories found. check spelling or create a new subcategory" + subcat);
 		}
 		return catidx;
 	}
+	
 	
 
 	public void add_transaction(String subcat, double amount) {
@@ -215,7 +254,7 @@ public class Budget {
 		this.net_a -= amount;
 	}
 	
-	private  int _find_category_idx(String cat_name) {
+	private  int _find_category_idx_c(String cat_name) {
 		int i = 0;
 		for (Category c: this.categories) {
 			if (c.getName().equals(cat_name)) {
@@ -286,6 +325,40 @@ public class Budget {
 		for (Category c: this.categories) {
 			c.print();
 		}
+	}
+	public static void save_data(Budget B) {
+		FileOutputStream fileOut = null;
+		ObjectOutputStream objOut = null;
+		
+		try {
+			fileOut = new FileOutputStream("Budget.ser");
+			objOut = new ObjectOutputStream(fileOut);
+			objOut.writeObject(B);
+			objOut.close();
+			fileOut.close();
+		}
+		catch(IOException i ){
+			i.printStackTrace();
+		}
+	}
+	public static Budget load_data() {
+		FileInputStream fileIn = null;
+		ObjectInputStream objIn = null;
+		Budget B = null;
+		try {
+			fileIn = new FileInputStream("University.ser");
+			objIn = new ObjectInputStream(fileIn);
+			B = (Budget)objIn.readObject();
+			objIn.close();
+			fileIn.close();
+		}
+		catch(IOException i ){
+			i.printStackTrace();
+		}
+		catch(ClassNotFoundException c ){ //check if class exists
+			c.printStackTrace();
+		}
+		return B;
 	}
 	
 	

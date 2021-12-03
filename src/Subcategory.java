@@ -114,23 +114,29 @@ public class Subcategory {
 		this.out_m = 0.00;
 	}
 	
-	public void move(Subcategory sc) {
-		 //move transactions
+	public void move(Subcategory src) {
+		//src.move(sc) moves sc's activity to this's fields. 
+		//dst.move(
+		//move transactions
 		for (Transaction t: this.transactionList) {
-			sc.addTransaction(t);
+			src.addTransaction(t);
 		}
-		sc.in_m += this.in_m ; //transfer assigned amount
-		sc.out_a += (this.in_a - this.out_a); //transfer available amount
+		src.in_m += this.in_m;
+		src.out_m += this.out_m;
+		src.out_a += this.in_a;
+		src.in_a += this.in_a;
 
 		//delete this's fields just in case, even tho we're deleting it from category and budget. 
-		this.goal = null;
-		this.in_a = 0.00;
-		this.in_m = 0.00;
-		this.out_a = 0.00;
-		this.out_m = 0.00;
-		this.name = " ";
-		this.transactionList = null;
-	}
+		/*
+		src.goal = null;
+		src.in_a = 0.00;
+		src.in_m = 0.00;
+		src.out_a = 0.00;
+		src.out_m = 0.00;
+		src.name = " ";
+		src.transactionList = null;
+		*/
 	
+	}
 	
 }

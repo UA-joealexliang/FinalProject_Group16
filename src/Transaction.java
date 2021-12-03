@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 
-public class Transaction {
+public class Transaction implements Serializable{
 	private int id;
 	private double amount;
 	private LocalDate date;

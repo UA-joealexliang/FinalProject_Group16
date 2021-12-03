@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Category {
+public class Category implements Serializable{
 	private String name; //name of the category
 	protected ArrayList<Subcategory> subcategories = new ArrayList<Subcategory>();
 	
@@ -58,14 +59,29 @@ public class Category {
 		return 0;
 		
 	}
+	protected Subcategory _find_subcategory(String name) {
+		if (this.subcategories.size() != 0) {
+			for (Subcategory sc: this.subcategories) {
+				if (sc.getName().equals(name)) {
+					return sc;
+				}
+				
+			}
+			
+			System.out.println("no matching catories found. check spelling or create a new subcategory " + name);
+			return null;
+		}//end empty categories list case
+		return null;
+		
+	}
 	
 	public void reset() {
 		for (Subcategory sc: this.subcategories) {
 			sc.reset();
 		}
 	}
-	public void delete_subcategory(String name) {
-		int idx = _find_subcategory_idx( name);
+	public void delete_subcategory(String sc) {
+		int idx = _find_subcategory_idx( sc);
 		this.subcategories.remove(idx);
 	}
 	

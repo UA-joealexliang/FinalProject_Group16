@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class Goal {
+public class Goal implements Serializable{
 	public double amount;
 	
 	public void set_amount(double amount) {
@@ -8,4 +9,6 @@ public class Goal {
 	public double get_amount() {
 		return this.amount;
 	}
+	
+	
 }

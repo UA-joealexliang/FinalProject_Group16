@@ -1,5 +1,7 @@
+import java.io.Serializable;
+
 //Payee class is the names of companies/people/etc. that you've paid to
-public class Payee {
+public class Payee implements Serializable{
 	private String name;
 	private String description;
 	
