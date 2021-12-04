@@ -118,6 +118,7 @@ public class Budget implements Serializable{
 				idx = c._find_subcategory_idx(subcategory);
 				c.subcategories.get(idx).set_monthly_in(amount);
 				this.in_unassigned -= amount;
+				this.net_a -= amount;
 				break;
 			}
 		}
@@ -125,7 +126,6 @@ public class Budget implements Serializable{
 			System.out.println("You have " + this.net_a.toString() + " . You can't assign what you don't have");
 			System.out.println("Options: move money from another category, or assign at most " + this.net_a.toString());
 		}
-		
 	}
 	
 	public void print_category_info(String cat) {
