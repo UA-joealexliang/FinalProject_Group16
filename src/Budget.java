@@ -59,6 +59,7 @@ public class Budget implements Serializable{
 				Subcategory sc = new Subcategory(name, amount); 
 				this.categories.get(idx).add_subcategory(sc);
 				this.in_unassigned -= amount;
+				this.net_a -= amount;
 				return true;
 			}
 			else { //need to create a new category, and add subcat to it 

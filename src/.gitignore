@@ -27,3 +27,7 @@
 /BudgetGUI$PrintTransactionInfoListener.class
 /BudgetGUI$SaveDataListener.class
 /BudgetGUI.class
+/BudgetGUI$AddMonthlyIncomeListener.class
+/BudgetGUI$AddPayeeListener.class
+/BudgetGUI$NewMonthListener.class
+/BudgetGUI$PrintPayeeInfoListener.class

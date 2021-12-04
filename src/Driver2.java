@@ -42,6 +42,7 @@ public class Driver2 {
 		B.print();
 		//B.delete_subcategory("Booze", "Groceries"); //delete works!
 		B.print();
+		B.assign("Groceries", 100);
 	}
 	
 }
