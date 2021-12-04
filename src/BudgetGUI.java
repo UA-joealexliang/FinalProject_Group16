@@ -2,6 +2,10 @@ import java.awt.event.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Set;
 
 import javax.swing.*;
 
@@ -18,20 +22,45 @@ public class BudgetGUI extends JFrame {
 	private JMenuItem exitItem;
 	private JMenuItem saveDataItem;
 	private JMenuItem loadDataItem;
+	private JMenuItem newMonthItem;
 	//categoryMenu components
 	private JMenu categoryMenu;
 	private JMenuItem addCategoryItem;
 	private JMenuItem addSubcategoryItem;
 	private JMenuItem addTransactionItem;
+	private JMenuItem addPayeeItem;
+	private JMenuItem addMonthlyIncomeItem;
 	//viewMenu components
 	private JMenu viewMenu;
 	private JMenuItem printCategoryInfoItem;
 	private JMenuItem printTransactionInfoItem;
+	private JMenuItem printPayeeInfoItem;
+	
+	//addMonthlyIncomeItem
+	private JPanel addMonthlyIncomePanel;
+	private JLabel monthlyincomeAmountLabel;
+	private JTextField monthlyincomeAmountField;
+	
+	//addPayee components
+	private JPanel newPayeePanel;
+	private JLabel payeeNameLabel;
+	private JLabel payeeDescLabel;
+	private JTextField payeeNameField;
+	private JTextField payeeDescField;
 	
 	//addCategory components
 	private JPanel newCategoryPanel;
 	private JLabel catNameLabel;
 	private JTextField catNameField;
+	
+	//addSubcategory components
+	private JPanel newSubcategoryPanel;
+	private JLabel subcatNameLabel;
+	private JLabel subcatAmountLabel;
+	private JLabel subcatParentLabel;
+	private JTextField subcatNameField;
+	private JTextField subcatAmountField;
+	private JTextField subcatParentField;
 	
 	//addTransaction components
 	private JPanel newTransactionPanel;
@@ -50,6 +79,11 @@ public class BudgetGUI extends JFrame {
 	private JTextField transCatField;
 	private JTextField transSubcatField;
 	
+	//printAllInfo components
+	private JFrame printAllInfoFrame;
+	private JScrollPane printAllInfoScrollPane;
+	private JTextPane printAllInfoTextPane;
+	
 	//Serialized Data
 	private Budget budget;
 
@@ -60,7 +94,25 @@ public class BudgetGUI extends JFrame {
 				//try catch block
 				try {
 					//create object BudgetGUI
-					new BudgetGUI("BudgetGUI", new Budget());
+					Budget testBudget = new Budget();
+					testBudget.set_monthly_in(10000.0);
+					testBudget.add_category("Shopping");
+					testBudget.add_category("Travel");
+					testBudget.add_subcategory("Shopping", "Food", 500.0);
+					testBudget.add_subcategory("Shopping", "Tech", 2000.0);
+					testBudget.add_subcategory("Travel", "Vacation", 5000.0);
+					testBudget.add_category("Entertainment");
+					Payee Walmart = new Payee();
+					Walmart.setName("Walmart");
+					testBudget.payeeList.add(Walmart);
+					//Transaction newTransaction = new Transaction();
+					//LocalDate date1 = LocalDate.parse("2021-12-03");
+					//newTransaction.setDate(date1);
+					//newTransaction.setPayee(Walmart);
+					//newTransaction.setAmount(200.0);
+					//newTransaction.setDescription("yummy");
+					//subcategory.addTransaction(newTransaction);
+					new BudgetGUI("BudgetGUI", testBudget);
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -112,10 +164,77 @@ public class BudgetGUI extends JFrame {
 		saveDataItem.addActionListener(new SaveDataListener());
 		loadDataItem = new JMenuItem("Load Data");
 		loadDataItem.addActionListener(new LoadDataListener());
+		newMonthItem = new JMenuItem("Reset To New Month");
+		newMonthItem.addActionListener(new NewMonthListener());
 		//add menu items to the file menu
+		fileMenu.add(newMonthItem);
  		fileMenu.add(saveDataItem);
  		fileMenu.add(loadDataItem);
  		fileMenu.add(exitItem);
+	}
+	private class NewMonthListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			int result = JOptionPane.showConfirmDialog(null, "Resetting to a new month will reset all subcategory budgets. Continue?", "Alert",JOptionPane.OK_CANCEL_OPTION);
+			if (result == JOptionPane.OK_OPTION) {
+				budget.reset();
+				int result3 = JOptionPane.showConfirmDialog(null, "All subcategory budgets have been reset. Would you like to add a paycheck?", "Success", JOptionPane.YES_NO_OPTION);
+				if (result3 == JOptionPane.YES_OPTION) {
+					addMonthlyIncomePanel = new JPanel();
+					addMonthlyIncomePanel.setLayout(new BoxLayout(addMonthlyIncomePanel, BoxLayout.Y_AXIS)); //vertical
+					monthlyincomeAmountLabel = new JLabel("Paycheck Amount:");
+					monthlyincomeAmountField = new JTextField();
+					addMonthlyIncomePanel.add(monthlyincomeAmountLabel);
+					addMonthlyIncomePanel.add(monthlyincomeAmountField);
+					int result4 = JOptionPane.showConfirmDialog(null, addMonthlyIncomePanel, "Add New Paycheck", JOptionPane.OK_CANCEL_OPTION);
+					if (result4 == JOptionPane.OK_OPTION) {
+						try {
+							double paycheckAmount = Double.parseDouble(monthlyincomeAmountField.getText());
+							budget.set_monthly_in(paycheckAmount);
+							int result5 = JOptionPane.showConfirmDialog(null, "New paycheck amount $"+paycheckAmount+" has been added. Your new total balance is $"+budget.net_a+". Would you like to reassign budgets for all the subcategories?", "Paycheck Added", JOptionPane.YES_NO_OPTION);
+							if (result5 == JOptionPane.YES_OPTION) {
+								JPanel budgetPanel = new JPanel();
+			                    budgetPanel.setLayout(new BoxLayout(budgetPanel, BoxLayout.Y_AXIS)); //vertical
+			                    //ArrayList<JTextField> scFields = new ArrayList<JTextField>();
+			                    //Hashtable<String, String> dictCategorytoSubcategory = new Hashtable<String, String>();
+			                    Hashtable<String, JTextField> htSubcategories = new Hashtable<String, JTextField>();
+			                    for (Category c : budget.categories) {
+			                        if (c.subcategories.size() > 0) {
+			                            JLabel cLabel = new JLabel("Category: "+c.getName());
+			                            budgetPanel.add(cLabel);
+			                            //ArrayList<JTextField> scFieldsList = new ArrayList<JTextField>();
+			                            for (Subcategory sc : c.subcategories) {
+			                                JLabel scLabel = new JLabel("New budget for subcategory \""+sc.getName()+"\":");
+			                                JTextField scBudgetField = new JTextField();
+			                                budgetPanel.add(scLabel);
+			                                budgetPanel.add(scBudgetField);
+			                                //scFieldsList.add(scBudgetField);
+			                                htSubcategories.put(sc.getName(), scBudgetField);
+			                            }
+			                        }
+			                    }
+			                    int result6 = JOptionPane.showConfirmDialog(null, budgetPanel, "Assign new budgets", JOptionPane.OK_CANCEL_OPTION);
+			                    if (result6 == JOptionPane.OK_OPTION) {
+			                        try {
+			                            Set<String> setOfSubcategories = htSubcategories.keySet();
+			                            for (String key : setOfSubcategories) {
+			                                Double budgetAmount = Double.parseDouble(htSubcategories.get(key).getText());
+			                                budget.assign(key, budgetAmount);
+			                            }
+			                            JOptionPane.showMessageDialog(null, "All subcategory budgets have been successfully reassigned.", "Success", JOptionPane.INFORMATION_MESSAGE);
+			                        }
+			                        catch (Exception exception) {
+			                            JOptionPane.showMessageDialog(null, exception, "Error", JOptionPane.ERROR_MESSAGE);
+			                        }
+			                    }
+							}
+						}
+						catch (Exception exception) {
+							JOptionPane.showMessageDialog(null, exception, "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					}
+				}
+			}
+		}
 	}
 	private class ExitListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
@@ -124,12 +243,47 @@ public class BudgetGUI extends JFrame {
 	}
 	private class SaveDataListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			Budget.saveData(budget);
+			JPanel saveBudgetPanel = new JPanel();//creates object panel
+			saveBudgetPanel.setLayout(new BoxLayout(saveBudgetPanel, BoxLayout.Y_AXIS)); //vertical
+			//create all labels and textfields
+			JLabel budgetNameLabel = new JLabel("Budget User Name:");
+			JTextField budgetNameField = new JTextField();
+			//add all components to panel
+			saveBudgetPanel.add(budgetNameLabel);
+			saveBudgetPanel.add(budgetNameField);
+			//add category functionality
+			int result = JOptionPane.showConfirmDialog(null, saveBudgetPanel, "Save User Data", JOptionPane.OK_CANCEL_OPTION);
+			if (result == JOptionPane.OK_OPTION) {
+				try {
+					budget.setName(budgetNameField.getText());
+					Budget.save_data(budget);
+				}
+				catch (Exception exception) {
+					JOptionPane.showMessageDialog(null, exception, "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
 		}
 	}
 	private class LoadDataListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			budget = Budget.loadData();
+			JPanel loadBudgetPanel = new JPanel();//creates object panel
+			loadBudgetPanel.setLayout(new BoxLayout(loadBudgetPanel, BoxLayout.Y_AXIS)); //vertical
+			//create all labels and textfields
+			JLabel budgetNameLabel = new JLabel("Budget User Name:");
+			JTextField budgetNameField = new JTextField();
+			//add all components to panel
+			loadBudgetPanel.add(budgetNameLabel);
+			loadBudgetPanel.add(budgetNameField);
+			//add category functionality
+			int result = JOptionPane.showConfirmDialog(null, loadBudgetPanel, "Load User Data", JOptionPane.OK_CANCEL_OPTION);
+			if (result == JOptionPane.OK_OPTION) {
+				try {
+					budget = Budget.load_data(budgetNameField.getText());
+				}
+				catch (Exception exception) {
+					JOptionPane.showMessageDialog(null, exception, "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
 		}
 	}
 	
@@ -144,10 +298,16 @@ public class BudgetGUI extends JFrame {
 		addSubcategoryItem.addActionListener(new AddSubcategoryListener());
 		addTransactionItem = new JMenuItem("Add Transaction");
 		addTransactionItem.addActionListener(new AddTransactionListener());
+		addPayeeItem = new JMenuItem("Add Payee");
+		addPayeeItem.addActionListener(new AddPayeeListener());
+		addMonthlyIncomeItem = new JMenuItem("Add Paycheck");
+		addMonthlyIncomeItem.addActionListener(new AddMonthlyIncomeListener());
 		//add menu items to the category menu
  		categoryMenu.add(addCategoryItem);
  		categoryMenu.add(addSubcategoryItem);
+ 		categoryMenu.add(addMonthlyIncomeItem);
  		categoryMenu.add(addTransactionItem);
+ 		categoryMenu.add(addPayeeItem);
 	}
 	private class AddCategoryListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
@@ -188,7 +348,65 @@ public class BudgetGUI extends JFrame {
 	}
 	private class AddSubcategoryListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			//FIXME
+			newSubcategoryPanel = new JPanel();
+			newSubcategoryPanel.setLayout(new BoxLayout(newSubcategoryPanel, BoxLayout.Y_AXIS)); //vertical
+			subcatParentLabel = new JLabel("Parent Category Name:");
+			subcatParentField = new JTextField();
+			subcatNameLabel = new JLabel("Subcategory Name:");
+			subcatNameField = new JTextField();
+			subcatAmountLabel = new JLabel("Amount Assigned Per Month:");
+			subcatAmountField = new JTextField();
+			newSubcategoryPanel.add(subcatParentLabel);
+			newSubcategoryPanel.add(subcatParentField);
+			newSubcategoryPanel.add(subcatNameLabel);
+			newSubcategoryPanel.add(subcatNameField);
+			newSubcategoryPanel.add(subcatAmountLabel);
+			newSubcategoryPanel.add(subcatAmountField);
+			int result = JOptionPane.showConfirmDialog(null, newSubcategoryPanel, "Create New Subcategory", JOptionPane.OK_CANCEL_OPTION);
+			if (result == JOptionPane.OK_OPTION) {
+				try {
+					String subcatParent = subcatParentField.getText();
+					String subcatName = subcatNameField.getText();
+					double subcatAmount = Double.parseDouble(subcatAmountField.getText());
+					ByteArrayOutputStream bOutput = new ByteArrayOutputStream(); //new storage for outputstream
+					PrintStream pStream = new PrintStream(bOutput);
+					PrintStream old = System.out; //save old output stream config
+					System.setOut(pStream);
+					boolean success = budget.add_subcategory(subcatParent, subcatName, subcatAmount);
+					System.out.flush(); 
+					System.setOut(old); //return to old output stream (console)
+					if (success == true) {
+						JOptionPane.showMessageDialog(null, "New Subcategory Created: \""+subcatName+"\" under parent Category \""+subcatParent+"\" with a monthly budget of $"+subcatAmount, "Success", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else {
+						JOptionPane.showMessageDialog(null, bOutput.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				catch (Exception exception) {
+					JOptionPane.showMessageDialog(null, exception, "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		}
+	}
+	private class AddMonthlyIncomeListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			addMonthlyIncomePanel = new JPanel();
+			addMonthlyIncomePanel.setLayout(new BoxLayout(addMonthlyIncomePanel, BoxLayout.Y_AXIS)); //vertical
+			monthlyincomeAmountLabel = new JLabel("Paycheck Amount:");
+			monthlyincomeAmountField = new JTextField();
+			addMonthlyIncomePanel.add(monthlyincomeAmountLabel);
+			addMonthlyIncomePanel.add(monthlyincomeAmountField);
+			int result = JOptionPane.showConfirmDialog(null, addMonthlyIncomePanel, "Add New Paycheck", JOptionPane.OK_CANCEL_OPTION);
+			if (result == JOptionPane.OK_OPTION) {
+				try {
+					double paycheckAmount = Double.parseDouble(monthlyincomeAmountField.getText());
+					budget.set_monthly_in(paycheckAmount);
+					JOptionPane.showMessageDialog(null, "New paycheck amount $"+paycheckAmount+" has been added. Your new total balance is $"+budget.net_a, "Paycheck Added", JOptionPane.INFORMATION_MESSAGE);
+				}
+				catch (Exception exception) {
+					JOptionPane.showMessageDialog(null, exception, "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
 		}
 	}
 	private class AddTransactionListener implements ActionListener {
@@ -246,14 +464,48 @@ public class BudgetGUI extends JFrame {
 					Subcategory subcategory = budget.getSubcategory(transCat, transSubcat);
 					System.out.flush(); 
 					System.setOut(old); //return to old output stream (console)
+					Payee payee = budget.getPayee(transPayee);
 					if (subcategory != null) {
-						//create transaction
-						Transaction newTransaction = new Transaction();
-						newTransaction.setDate(date);
-						newTransaction.setPayee(transPayee); //FIXME
-						newTransaction.setAmount(transAmount);
-						newTransaction.setDescription(transDesc);
-						JOptionPane.showMessageDialog(null, "New Transaction Created:"+"\nDate: "+transDate+"\nPaid To: "+transPayee+"\nAmount Paid: "+transAmount+"\nDescription: "+transDesc, "Success", JOptionPane.INFORMATION_MESSAGE);
+						if (payee != null) {
+							//create transaction
+							Transaction newTransaction = new Transaction();
+							newTransaction.setDate(date);
+							newTransaction.setPayee(payee);
+							newTransaction.setAmount(transAmount);
+							newTransaction.setDescription(transDesc);
+							subcategory.addTransaction(newTransaction);
+							JOptionPane.showMessageDialog(null, "New Transaction Created:"+"\nDate: "+transDate+"\nPaid To: "+transPayee+"\nAmount Paid: "+transAmount+"\nDescription: "+transDesc, "Success", JOptionPane.INFORMATION_MESSAGE);
+						}
+						else {
+							int result2 = JOptionPane.showConfirmDialog(null, "Add \""+transPayee+"\" as a new payee?", "Alert", JOptionPane.OK_CANCEL_OPTION);
+							if (result2 == JOptionPane.OK_OPTION) {
+								newPayeePanel = new JPanel();
+								newPayeePanel.setLayout(new BoxLayout(newPayeePanel, BoxLayout.Y_AXIS)); //vertical
+								payeeNameLabel = new JLabel("Enter payee name:");
+								payeeNameField = new JTextField(transPayee);
+								payeeDescLabel = new JLabel("Enter payee description (optional):");
+								payeeDescField = new JTextField();
+								newPayeePanel.add(payeeNameLabel);
+								newPayeePanel.add(payeeNameField);
+								newPayeePanel.add(payeeDescLabel);
+								newPayeePanel.add(payeeDescField);
+								int result3 = JOptionPane.showConfirmDialog(null, newPayeePanel, "Add New Payee", JOptionPane.OK_CANCEL_OPTION);
+								if (result3 == JOptionPane.OK_OPTION) {
+									payee = new Payee();
+									payee.setName(payeeNameField.getText());
+									payee.setDescription(payeeDescField.getText());
+									budget.payeeList.add(payee);
+									JOptionPane.showMessageDialog(null, "Successfully created new payee \""+payeeNameField.getText()+"\"", "Success", JOptionPane.INFORMATION_MESSAGE);
+									Transaction newTransaction = new Transaction();
+									newTransaction.setDate(date);
+									newTransaction.setPayee(payee);
+									newTransaction.setAmount(transAmount);
+									newTransaction.setDescription(transDesc);
+									subcategory.addTransaction(newTransaction);
+									JOptionPane.showMessageDialog(null, "New Transaction Created:"+"\nDate: "+transDate+"\nPaid To: "+transPayee+"\nAmount Paid: "+transAmount+"\nDescription: "+transDesc, "Success", JOptionPane.INFORMATION_MESSAGE);
+								}
+							}
+						}
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "Transaction could not be created, Category \""+transCat+"\" or Subcategory \""+transSubcat+"\" could not be found", "Error", JOptionPane.ERROR_MESSAGE);
@@ -265,6 +517,28 @@ public class BudgetGUI extends JFrame {
 			}
 		}
 	}	
+	private class AddPayeeListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			newPayeePanel = new JPanel();
+			newPayeePanel.setLayout(new BoxLayout(newPayeePanel, BoxLayout.Y_AXIS)); //vertical
+			payeeNameLabel = new JLabel("Enter payee name:");
+			payeeNameField = new JTextField();
+			payeeDescLabel = new JLabel("Enter payee description (optional):");
+			payeeDescField = new JTextField();
+			newPayeePanel.add(payeeNameLabel);
+			newPayeePanel.add(payeeNameField);
+			newPayeePanel.add(payeeDescLabel);
+			newPayeePanel.add(payeeDescField);
+			int result = JOptionPane.showConfirmDialog(null, newPayeePanel, "Add New Payee", JOptionPane.OK_CANCEL_OPTION);
+			if (result == JOptionPane.OK_OPTION) {
+				Payee payee = new Payee();
+				payee.setName(payeeNameField.getText());
+				payee.setDescription(payeeDescField.getText());
+				budget.payeeList.add(payee);
+				JOptionPane.showMessageDialog(null, "Successfully created new payee \""+payeeNameField.getText()+"\"", "Success", JOptionPane.INFORMATION_MESSAGE);
+			}
+		}
+	}
 	
 	//viewMenu
 	private void buildViewMenu() {
@@ -275,71 +549,17 @@ public class BudgetGUI extends JFrame {
 		printCategoryInfoItem.addActionListener(new PrintCategoryInfoListener());
 		printTransactionInfoItem = new JMenuItem("Print Transaction Info");
 		printTransactionInfoItem.addActionListener(new PrintTransactionInfoListener());
+		printPayeeInfoItem = new JMenuItem("Print Payee Info");
+		printPayeeInfoItem.addActionListener(new PrintPayeeInfoListener());
 		//add menu items to the file menu
 		viewMenu.add(printCategoryInfoItem);
 		viewMenu.add(printTransactionInfoItem);
 	}
 	private class PrintCategoryInfoListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			//FIXME
-		}
-	}
-	private class PrintTransactionInfoListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			//FIXME
-		}
-	}
-	/*
-	private class PrintScheduleListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			//create panel
-			printSchedulePanel = new JPanel();
-			printSchedulePanel.setLayout(new BoxLayout(printSchedulePanel, BoxLayout.Y_AXIS)); //vertical
-			//create all labels and textfields
-			psstudentNameLabel = new JLabel("Student Name:");
-			psstudentNameField = new JTextField();
-			//add all components to panel
-			printSchedulePanel.add(psstudentNameLabel);
-			printSchedulePanel.add(psstudentNameField);
-			//add course functionality
-			int result = JOptionPane.showConfirmDialog(null, printSchedulePanel, "Print Student Schedule", JOptionPane.OK_CANCEL_OPTION);
-			if (result == JOptionPane.OK_OPTION) {
-				String studentName = psstudentNameField.getText();
-				Student student = new Student();
-				boolean studentExists = false;
-				for (Department dept : university.departmentList) {
-					for (Student s : dept.getStudentList()) {
-						if (studentName.equals(s.getName())) {
-							student = s;
-							studentExists = true;
-						}
-					}
-				}
-				if (studentExists == true) {
-					ByteArrayOutputStream bOutput = new ByteArrayOutputStream(); //new storage for outputstream
-					PrintStream pStream = new PrintStream(bOutput);
-					PrintStream old = System.out; //save old output stream config
-					System.setOut(pStream);
-					student.printSchedule();
-					System.out.flush(); 
-					System.setOut(old); //return to old output stream (console)
-					JOptionPane.showMessageDialog(null, bOutput.toString(), "Student "+studentName+"'s Schedule", JOptionPane.PLAIN_MESSAGE);
-				}
-				else if (studentExists == false) {
-					JOptionPane.showMessageDialog(null,"Student "+studentName+" doesn't exist", "Error Printing Schedule", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		}
-	}
-	*/
-	/*
-	private class PrintAllInfoListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			//create and configure window for printAllInfo
-			printAllInfoFrame = new JFrame("PrintAllInfo Window");
-			printAllInfoFrame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-			printAllInfoFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-			Container contentPane = printAllInfoFrame.getContentPane();
+			Container contentPane = getContentPane();
+			contentPane.removeAll();
+			repaint();
 			//create text pane
 			printAllInfoTextPane = new JTextPane();
 			//change output to bOutput
@@ -347,7 +567,7 @@ public class BudgetGUI extends JFrame {
 			PrintStream pStream = new PrintStream(bOutput);
 			PrintStream old = System.out; //save old output stream config
 			System.setOut(pStream);
-			university.printAll();
+			budget.printCategoryInfo();
 			System.out.flush(); 
 			System.setOut(old); //return to old output stream (console)
 			//place text into InfoTextPane
@@ -356,8 +576,55 @@ public class BudgetGUI extends JFrame {
 			printAllInfoScrollPane = new JScrollPane(printAllInfoTextPane); //set it as a scrollpane
 			contentPane.add(printAllInfoScrollPane, BorderLayout.CENTER);
 			//make the menu visible
-			printAllInfoFrame.setVisible(true);
+			setVisible(true);
 		}
 	}
-	*/
+	private class PrintTransactionInfoListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			Container contentPane = getContentPane();
+			contentPane.removeAll();
+			repaint();
+			//create text pane
+			printAllInfoTextPane = new JTextPane();
+			//change output to bOutput
+			ByteArrayOutputStream bOutput = new ByteArrayOutputStream(); //new storage for outputstream
+			PrintStream pStream = new PrintStream(bOutput);
+			PrintStream old = System.out; //save old output stream config
+			System.setOut(pStream);
+			System.out.println("PrintTransactionInfoListener\nBudget\nBudget\nBudget\nBudget\nBudget\nBudget\nBudget\n\n\n\n\n\n\nBUDGETBUDGETBUDGET");//FIXME
+			System.out.flush(); 
+			System.setOut(old); //return to old output stream (console)
+			//place text into InfoTextPane
+			printAllInfoTextPane.setText(bOutput.toString());
+			//add components to menu
+			printAllInfoScrollPane = new JScrollPane(printAllInfoTextPane); //set it as a scrollpane
+			contentPane.add(printAllInfoScrollPane, BorderLayout.CENTER);
+			//make the menu visible
+			setVisible(true);
+		}
+	}
+	private class PrintPayeeInfoListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			Container contentPane = getContentPane();
+			contentPane.removeAll();
+			repaint();
+			//create text pane
+			printAllInfoTextPane = new JTextPane();
+			//change output to bOutput
+			ByteArrayOutputStream bOutput = new ByteArrayOutputStream(); //new storage for outputstream
+			PrintStream pStream = new PrintStream(bOutput);
+			PrintStream old = System.out; //save old output stream config
+			System.setOut(pStream);
+			System.out.println("PrintPayeeInfoListener\nBudget\nBudget\nBudget\nBudget\nBudget\nBudget\nBudget\n\n\n\n\n\n\nBUDGETBUDGETBUDGET");//FIXME
+			System.out.flush(); 
+			System.setOut(old); //return to old output stream (console)
+			//place text into InfoTextPane
+			printAllInfoTextPane.setText(bOutput.toString());
+			//add components to menu
+			printAllInfoScrollPane = new JScrollPane(printAllInfoTextPane); //set it as a scrollpane
+			contentPane.add(printAllInfoScrollPane, BorderLayout.CENTER);
+			//make the menu visible
+			setVisible(true);
+		}
+	}
 }

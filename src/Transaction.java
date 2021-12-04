@@ -7,7 +7,7 @@ public class Transaction implements Serializable{
 	private double amount;
 	private LocalDate date;
 	private Payee payee;
-	private String description;
+	private String description = "no description";
 	
 	//constructors
 	Transaction() {}

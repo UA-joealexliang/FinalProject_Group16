@@ -1,9 +1,10 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 //NAMING CONVENTIONS:
 // variable_m denotes monthly  
 // variable_a denotes all time  
 // net_ dentoes net 
-public class Subcategory {
+public class Subcategory implements Serializable{
 	private String name; //name of the category
 	protected Double out_a = 0.00; //out_a : money out SINCE CATEGORY INCEPTION
 	protected Double out_m = 0.00; 
