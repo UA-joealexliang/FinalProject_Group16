@@ -18,7 +18,7 @@ public class Budget implements Serializable{
 	public Double net_a = 0.00; //net all time
 	public Double in_m = 0.00; //monthly income
 	public Double in_unassigned = 0.00;
-	public String name;
+	public String name = "Unknown";
 	
 	public void setName(String name) {
 		this.name = name;
@@ -30,19 +30,6 @@ public class Budget implements Serializable{
 	public double get_total_balance( ) {
 		return 2; //for loop
 	}
-	
-	//decision to keep amount only in subcategory
-	/*public void add_category(String name, Double amount ) {
-		if (this.net_a >= amount) {//check if we even have this much money in the account
-			Category c = new Category(name);
-			this.categories.add(c);
-		}
-		else { //we do not have this amount. 
-			System.out.println("You have " + this.net_a.toString() + " . You can't assign what you don't have");
-			System.out.println("Options: move money from another category, or assign at most " + this.net_a.toString());
-		}
-		
-	}*/
 	
 	public boolean add_category(String cat ) {	
 		//returns true if category was succesfully added, false else
@@ -65,7 +52,6 @@ public class Budget implements Serializable{
 			return true;
 		}
 	}
-	
 	public boolean add_subcategory(String parent, String name, double amount) {
 		if (this.net_a >= amount) { //check if we even have this much money in the account			
 			int idx = _find_category_idx_c(parent);
@@ -114,12 +100,14 @@ public class Budget implements Serializable{
 	
 	public void assign(String subcategory, double amount ) {
 		if (this.net_a >= amount) {
-			int idx;
 			for (Category c: this.categories) {
-				idx = c._find_subcategory_idx(subcategory);
-				c.subcategories.get(idx).set_monthly_in(amount);
-				this.in_unassigned -= amount;
-				break;
+				for (Subcategory sc: c.subcategories) {
+					if (subcategory.equals(sc.getName())) {
+						sc.set_monthly_in(amount);
+						this.in_unassigned -= amount;
+						break;
+					}
+				}
 			}
 		}
 		else {
@@ -358,7 +346,7 @@ public class Budget implements Serializable{
 		ObjectOutputStream objOut = null;
 		
 		try {
-			fileOut = new FileOutputStream("Budget.ser");
+			fileOut = new FileOutputStream("Budget_"+B.getName()+".ser");
 			objOut = new ObjectOutputStream(fileOut);
 			objOut.writeObject(B);
 			objOut.close();
@@ -368,12 +356,12 @@ public class Budget implements Serializable{
 			i.printStackTrace();
 		}
 	}
-	public static Budget load_data() {
+	public static Budget load_data(String budgetUser) {
 		FileInputStream fileIn = null;
 		ObjectInputStream objIn = null;
 		Budget B = null;
 		try {
-			fileIn = new FileInputStream("University.ser");
+			fileIn = new FileInputStream("Budget_"+budgetUser+".ser");
 			objIn = new ObjectInputStream(fileIn);
 			B = (Budget)objIn.readObject();
 			objIn.close();
@@ -388,7 +376,18 @@ public class Budget implements Serializable{
 		return B;
 	}
 	
-	
+	public void printCategoryInfo() {
+		for (Category c : this.categories) {
+			System.out.println("Category: "+c.getName());
+			for (Subcategory sc : c.subcategories) {
+				System.out.println("  "+"Subcategory: "+sc.getName());
+				for (Transaction t : sc.getTransactionList()) {
+					System.out.println("    "+t.getDate()+"  "+t.getPayee().getName()+"  {"+t.getDescription()+"}  $"+t.getAmount());
+				}
+			}
+			System.out.println("----------------------------------------------------------------");
+		}
+	}
 	
 	
 }//end class def 
