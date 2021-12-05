@@ -1,13 +1,15 @@
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
 
 public class  GoalByDate extends Goal {
 	private Date goalDate;
-	private double amt_m; //the monthly amount to be allocated in order to reach the goal by the given date
+	private Double amt_m; //the monthly amount to be allocated in order to reach the goal by the given date
 	
-	GoalByDate(Integer month, Integer day, Integer year){ 
+	GoalByDate(Double amount, Integer month, Integer day, Integer year){ 
 		Calendar calendar = new GregorianCalendar(year, month-1, day);
 		/*
 		calendar.set(Calendar.YEAR, year);
@@ -15,6 +17,8 @@ public class  GoalByDate extends Goal {
 		calendar.set(Calendar.DAY_OF_MONTH, day);
 		*/
 		this.goalDate = calendar.getTime();
+		this.amount = amount;
+		this.amt_m = format_amt_m(calc_amt_m());
 	}
 	
 	private int _days_between() { //return number of days between current date and goaldate
@@ -22,18 +26,32 @@ public class  GoalByDate extends Goal {
 		Integer difference =  (int) ((goalDate.getTime()-today.getTime())/86400000);
         return  Math.abs(difference)+1;
 	}
-	private double calc_amt_m() { //calls _days_between() to find the monthly amount needed to reach the goal by the given date
+	private Double calc_amt_m() { //calls _days_between() to find the monthly amount needed to reach the goal by the given date
 		int days = _days_between() ;
 		return this.amount / days;
 	}
-	public double get_amt_m() {
+	public Double get_amt_m() {
 		return this.amt_m;
 	}
-	public void set_amt(double amount) {
+	public void set_amt(Double amount) {
 		this.amount = amount;
 		this.amt_m = calc_amt_m();
 	}
 	Date get_date() {
 		return this.goalDate;
+	}
+	private Double format_amt_m(Double amt) {
+		DecimalFormat df = new DecimalFormat("#.##");
+		return Double.parseDouble(df.format(amt));
+	}
+	protected String format_date() {
+		SimpleDateFormat sdf = new SimpleDateFormat("MMMMM d, yyyy");
+		String simple_date = sdf.format(this.goalDate); 
+		return simple_date;
+		
+	}
+	protected String get_message() {
+		return "you need to assign $" + this.get_amt_m().toString() + " to reach your goal of $" + this.get_amount().toString()  
+		+ " by " + this.format_date();
 	}
 }

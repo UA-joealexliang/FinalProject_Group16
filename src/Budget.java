@@ -52,6 +52,7 @@ public class Budget implements Serializable{
 			return true;
 		}
 	}
+	
 	public boolean add_subcategory(String parent, String name, double amount) {
 		if (this.in_unassigned >= amount) { //check if we even have this much money in the account			
 			int idx = _find_category_idx_c(parent);
@@ -80,6 +81,22 @@ public class Budget implements Serializable{
 			return false;
 		}
 	}
+	
+	//overloaded add_subcategory, lets you not add an amount
+	public boolean add_subcategory(String parent, String name) {
+		Category p = this._find_cat_c(parent);
+		if (p != null) {
+			Subcategory sc = new Subcategory(name); 
+			p.add_subcategory(sc);
+			return true;
+		}
+
+		else { //need to create a new category, and add subcat to it 
+			System.out.println("No matching category " + parent + " found.");
+			return false;
+		}	
+	}
+
 	
 	public boolean move_money(String src, String dst) {
 		Subcategory Src = this._find_subcat(src);
@@ -119,15 +136,7 @@ public class Budget implements Serializable{
 		}
 	}
 	
-	public void print_category_info(String cat) {
-		Integer idx = _find_cat_idx_c(cat);
-		if (idx == -1) {
-			return;
-		}
-		else {
-			this.categories.get(idx).print();
-		}
-	}
+	
 	
 	public Integer _find_cat_idx_c(String cat) { //finds the index of the category whith the name cat. 
 		Integer i = 0;
@@ -141,10 +150,10 @@ public class Budget implements Serializable{
 		//System.out.println("no matching catories found. check spelling or create a new subcategory" + cat);
 		return -1;
 	}
-	public Category _find_cat(String subcat) { //finds the index of the CATEGORY that holds subcat
-		Subcategory sc = null;
+	public Category _find_cat_s(String subcat) { 
+		Subcategory sc = null; 
 		for (Category c: this.categories) {
-			 sc = c._find_subcategory(subcat);
+			sc = c._find_subcategory(subcat); //this is null if no sc called subcat exists in c 
 			if (sc==null) { 
 				continue;
 			}
@@ -152,6 +161,15 @@ public class Budget implements Serializable{
 		}
 		 //subcategory was not found in any of the categories 
 			//System.out.println("no matching categories found. check spelling or create a new subcategory" + subcat);
+			return null;
+	}
+	public Category _find_cat_c(String cat) { 
+		for (Category c: this.categories) {
+			if (c.getName().equals(cat)) {
+				return c;
+			}
+			continue;
+		}
 			return null;
 	}
 	
@@ -336,13 +354,8 @@ public class Budget implements Serializable{
 		this.in_unassigned += monthly_income;
 	}
 	
-	public void print() {
-		System.out.println("Monthly Income" + "\t\t\t "+ "Unassigned Money\t");
-		System.out.println( "   " + this.in_m.toString() + "  " + "\t\t\t\t\t" + this.in_unassigned.toString());
-		for (Category c: this.categories) {
-			c.print();
-		}
-	}
+	
+	
 	public static void save_data(Budget B) {
 		FileOutputStream fileOut = null;
 		ObjectOutputStream objOut = null;
@@ -390,7 +403,26 @@ public class Budget implements Serializable{
 			System.out.println("----------------------------------------------------------------");
 		}
 	}
-	
+	public void print_category_info(String cat) {
+		Integer idx = _find_cat_idx_c(cat);
+		if (idx == -1) {
+			return;
+		}
+		else {
+			this.categories.get(idx).print();
+		}
+	}
+	public void printAll() {
+		System.out.println("Net Worth" + "\t\t\t "+ "Unassigned Money\t");
+		System.out.println( "   " + this.net_a.toString() + "  " + "\t\t\t\t" + this.in_unassigned.toString());
+		System.out.println("Net Worth" + "\t\t\t "+ "Unassigned Money\t");
+		System.out.println("----------------------------------------------------------------");
+		System.out.println("\n");
+		System.out.println("\t\t\t"  + "Assigned\t" +  "Spent\t\t" + "Available\t" );
+		for (Category c: this.categories) {
+			c.print();
+		}
+	}
 	
 }//end class def 
 

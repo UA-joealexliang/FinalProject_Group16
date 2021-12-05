@@ -38,7 +38,7 @@ public class Category implements Serializable{
 			sc.print();
 		}
 	}
-
+	
 	public ArrayList<Subcategory> getSubcategories() {
 		return subcategories;
 	}
