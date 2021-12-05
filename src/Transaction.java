@@ -50,14 +50,17 @@ public class Transaction implements Serializable{
 	public void setPayee(Payee payee) {
 		this.payee = payee;
 	}
+	public Payee getPayee() {
+		return this.payee;
+	}
 	 */
 	public void setPayee(String payee) {
 		this.payee = payee;
 	}
-	public Payee getPayee() {
+	
+	public String getPayee() {
 		return this.payee;
 	}
-	
 	public void setDescription(String desc) {
 		this.description = desc;
 	}
