@@ -6,8 +6,8 @@ public class Transaction implements Serializable{
 	private int id;
 	private double amount;
 	private LocalDate date;
-	//private Payee payee;
-	private String payee;
+	private Payee payee;
+	//private String payee;
 	private String description = "no description";
 	
 	//constructors
@@ -15,6 +15,7 @@ public class Transaction implements Serializable{
 	Transaction(double amt){
 		this.amount = amt;
 	}
+	/*
 	Transaction(double amt, String s){
 		this.amount = amt;
 		this.payee = s;
@@ -23,7 +24,7 @@ public class Transaction implements Serializable{
 		this.amount = amt;
 		this.payee = s;
 		this.description = d;
-	}
+	}*/
 	
 	//id is unimplemented, and may not be needed
 	public void setId(int id) {
@@ -46,21 +47,21 @@ public class Transaction implements Serializable{
 	public LocalDate getDate() {
 		return this.date;
 	}
-	/*
+	
 	public void setPayee(Payee payee) {
 		this.payee = payee;
 	}
 	public Payee getPayee() {
 		return this.payee;
 	}
-	 */
+	/*
 	public void setPayee(String payee) {
 		this.payee = payee;
 	}
 	
 	public String getPayee() {
 		return this.payee;
-	}
+	}*/
 	public void setDescription(String desc) {
 		this.description = desc;
 	}
