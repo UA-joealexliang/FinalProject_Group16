@@ -139,5 +139,9 @@ public class Subcategory implements Serializable{
 		*/
 	
 	}
-	
+	public void print_transactions() {
+		for (Transaction T: this.transactionList) {
+			
+		}
+	}
 }

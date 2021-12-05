@@ -14,6 +14,7 @@ public class Transaction implements Serializable{
 	Transaction() {}
 	Transaction(double amt){
 		this.amount = amt;
+		//this.date = new LocalDate();
 	}
 	/*
 	Transaction(double amt, String s){

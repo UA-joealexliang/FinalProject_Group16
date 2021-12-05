@@ -53,7 +53,7 @@ public class Budget implements Serializable{
 		}
 	}
 	public boolean add_subcategory(String parent, String name, double amount) {
-		if (this.net_a >= amount) { //check if we even have this much money in the account			
+		if (this.in_unassigned >= amount) { //check if we even have this much money in the account			
 			int idx = _find_category_idx_c(parent);
 			if (idx != -1 ) { //category parentd name exists 
 				Subcategory sc = new Subcategory(name, amount); 
@@ -106,7 +106,6 @@ public class Budget implements Serializable{
 				sc.set_monthly_in(amount);
 				sc.in_a += amount;
 				this.in_unassigned -= amount;
-				this.net_a -= amount;
 				return true;
 			}
 			System.out.println(subcategory + " does not exist");
