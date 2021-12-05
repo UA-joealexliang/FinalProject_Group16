@@ -3,7 +3,7 @@ import java.time.temporal.TemporalAdjusters;
 
 public class Driver2 {
 	public static void main(String[] args) {
-
+	/*
 	//1. create a new Budget
 		//Budget holds categories, which hold subcategories. 
 		Budget B = new Budget(); 
@@ -43,6 +43,14 @@ public class Driver2 {
 		//B.delete_subcategory("Booze", "Groceries"); //delete works!
 		B.print();
 		B.assign("Groceries", 100);
+		*/
+		Budget b2 = new Budget();
+		b2.set_monthly_in(100.00);
+		b2.add_category("Kitchen");
+		b2.add_category("Utilities");
+		b2.add_category("Transportation");
+		//b2.add_subcategory("Kitchen", "Groceries", 150); //this errors because the user doesn't have enough money
+		b2.assign("Groceries", 150);
 	}
 	
 }

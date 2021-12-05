@@ -99,19 +99,24 @@ public class Budget implements Serializable{
 	}
 	
 	
-	public void assign(String subcategory, double amount ) {
+	public boolean assign(String subcategory, double amount ) {
 		if (this.net_a >= amount) {
-			for (Category c: this.categories) {
-				idx = c._find_subcategory_idx(subcategory);
-				c.subcategories.get(idx).set_monthly_in(amount);
+			Subcategory sc = this._find_subcat(subcategory);
+			if (sc != null) {
+				sc.set_monthly_in(amount);
+				sc.in_a += amount;
 				this.in_unassigned -= amount;
 				this.net_a -= amount;
-				break;
+				return true;
 			}
+			System.out.println(subcategory + " does not exist");
+			return false;
 		}
+			
 		else {
 			System.out.println("You have " + this.net_a.toString() + " . You can't assign what you don't have");
 			System.out.println("Options: move money from another category, or assign at most " + this.net_a.toString());
+			return false;
 		}
 	}
 	
