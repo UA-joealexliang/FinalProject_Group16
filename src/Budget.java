@@ -110,7 +110,7 @@ public class Budget implements Serializable{
 	}
 	
 	
-	public boolean assign(String subcategory, double amount ) {
+	public boolean assign(String subcategory, Double amount ) {
 		if (this.in_unassigned >= amount) {
 			Subcategory sc = this._find_subcat(subcategory);
 			if (sc != null) {
@@ -137,6 +137,7 @@ public class Budget implements Serializable{
 			}
 			System.out.println(subcategory + " does not exist");
 			return false;
+		}
 		
 				
 				
@@ -442,7 +443,7 @@ public class Budget implements Serializable{
 				for (Transaction t : sc.getTransactionList()) {
 					total = total + t.getAmount();
 				}
-				System.out.println("  "+"Subcategory: "+sc.getName()+" [Assigned: $"+sc.in_m+" Spent: $"+total+"]");
+				System.out.println("  "+"Subcategory: "+sc.getName()+" [Assigned: $"+sc.assigned+" Spent: $"+total+"]");
 				for (Transaction t : sc.getTransactionList()) {
 					System.out.println("    "+t.getDate()+"  "+t.getPayee().getName()+"  {"+t.getDescription()+"}  $"+t.getAmount());
 				}
