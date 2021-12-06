@@ -64,7 +64,9 @@ public class Transaction implements Serializable{
 		return this.payee;
 	}*/
 	public void setDescription(String desc) {
-		this.description = desc;
+		if (!desc.equals("")) {
+			this.description = desc;
+		}
 	}
 	public String getDescription() {
 		return this.description;

@@ -14,6 +14,7 @@ public class Subcategory implements Serializable{
 	protected Goal goal; //goal is optional, used to save up money for things; goals doesn't actually assign money though. 
 
 	// better explained mathematically:
+	private ArrayList<Transaction> alltransactionList = new ArrayList<Transaction>();
 	private ArrayList<Transaction> transactionList = new ArrayList<Transaction>();
 	private Double availableFunds; //availableFunds is money assigned to the category
 	//rename availableFunds to net_a?? 
@@ -56,8 +57,8 @@ public class Subcategory implements Serializable{
 	
 	public void addTransaction(Transaction transaction) {
 		this.transactionList.add(transaction);
-		this.in_a -= transaction.getAmount();
-		this.in_m -= transaction.getAmount();
+		//this.in_a -= transaction.getAmount();
+		//this.in_m -= transaction.getAmount();
 		this.out_a += transaction.getAmount();
 		this.out_m += transaction.getAmount();
 		
@@ -113,6 +114,11 @@ public class Subcategory implements Serializable{
 	public void reset() {
 		this.in_m = 0.00;
 		this.out_m = 0.00;
+		//System.out.println(this.getName()+" reset");
+		for (Transaction t : this.transactionList) {
+			this.alltransactionList.add(t);
+			this.transactionList.remove(t);
+		}
 	}
 	
 	public void move(Subcategory src) {

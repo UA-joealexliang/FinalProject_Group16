@@ -60,18 +60,19 @@ public class Category implements Serializable{
 		
 	}
 	protected Subcategory _find_subcategory(String name) {
+		Subcategory sub = null;
 		if (this.subcategories.size() != 0) {
 			for (Subcategory sc: this.subcategories) {
 				if (sc.getName().equals(name)) {
-					return sc;
+					sub = sc;
 				}
 				
 			}
 			
-			System.out.println("no matching catories found. check spelling or create a new subcategory " + name);
-			return null;
+			//System.out.println("no matching catories found. check spelling or create a new subcategory " + name);
+			//return sub;
 		}//end empty categories list case
-		return null;
+		return sub;
 		
 	}
 	
