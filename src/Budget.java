@@ -54,24 +54,17 @@ public class Budget implements Serializable{
 	}
 	
 	public boolean add_subcategory(String parent, String name, double amount) {
-		if (this.in_unassigned >= amount) { //check if we even have this much money in the account			
-			int idx = _find_category_idx_c(parent);
-			if (idx != -1 ) { //category parentd name exists 
+		if (this.in_unassigned >= amount) { //check if we even have this much money in the account		
+			Category p  = this._find_cat_c(parent);
+			if (p != null) { //category parentd name exists 
 				Subcategory sc = new Subcategory(name, amount); 
-				this.categories.get(idx).add_subcategory(sc);
+				p.add_subcategory(sc);
 				this.in_unassigned -= amount;
-				this.net_a -= amount;
+				//check if sc.assigned is null 
 				return true;
 			}
 			else { //need to create a new category, and add subcat to it 
 				System.out.println("No matching category " + parent + " found.");
-				//FIX ME: need to add user input
-				//Category c = new Category(parent);
-				//Subcategory sc = new Subcategory(name, amount);
-				//c.subcategories.add(sc);
-				//this.categories.add(c);	
-				//this.in_unassigned -= amount;
-				//return true;
 				return false;
 			}	
 		}
@@ -110,33 +103,56 @@ public class Budget implements Serializable{
 			return false;
 		}
 		else {
-			Src.in_a += Dst.in_a - Dst.out_a;
+			Src.assigned += Dst.assigned;
+			Src.out_m += Dst.out_m;
 			return true;
 		}
 	}
 	
 	
-	public boolean assign(String subcategory, double amount ) {
-		if (this.net_a >= amount) {
-			Subcategory sc = this._find_subcat(subcategory);
+	public boolean assign(String subcategory, Double amount ) {
+		Subcategory sc = this._find_subcat(subcategory);
 			if (sc != null) {
-				sc.set_monthly_in(amount);
-				sc.in_a += amount;
-				this.in_unassigned -= amount;
-				return true;
+				if (this.net_a >= amount) {
+					if (sc.assigned == 0.00) { 
+						sc.assigned = amount;
+						this.in_unassigned -= amount;
+						sc.assigned += amount;
+						return true;
+					} //end case where we have not assigned an amount yet 
+					else { //we already assigned money 
+						System.out.println("you have already assigned " + this.in_m.toString() + "to "+ sc.getName()+ ". Reassigning " + amount.toString() + " to " + this.getName());
+						reassign(sc, amount);
+						//FIXME maybe prompt the user to enter a new amount
+						return false;
+					}//end case where we sc already has money assigned 
+				}//end case where we have enough $
+				
+				else {
+					System.out.println("You have " + this.net_a.toString() + " . You can't assign what you don't have");
+					System.out.println("Options: move money from another category, or assign at most " + this.net_a.toString());
+					return false;
+				}//end case where sc exists 
 			}
 			System.out.println(subcategory + " does not exist");
 			return false;
-		}
+		
+				
+				
 			
-		else {
-			System.out.println("You have " + this.net_a.toString() + " . You can't assign what you don't have");
-			System.out.println("Options: move money from another category, or assign at most " + this.net_a.toString());
-			return false;
-		}
+	
 	}
 	
-	
+	private void reassign(Subcategory sc, Double amt_new) {
+		Double amt_old = sc.assigned;
+		//subtract old amount from pertinent objects
+		this.in_unassigned += amt_old;
+		sc.in_a -= amt_old;
+		//set new amount,update pertinent objects
+		sc.assigned = amt_new;
+		this.in_unassigned -= amt_new;
+		sc.in_a += amt_new;
+	}
 	
 	public Integer _find_cat_idx_c(String cat) { //finds the index of the category whith the name cat. 
 		Integer i = 0;
@@ -273,18 +289,9 @@ public class Budget implements Serializable{
 
 	public void add_transaction(String subcat, double amount) {
 		Transaction T = new Transaction(amount);
-		int idx = 0;
-		for (Category c: this.categories) {
-			idx = c._find_subcategory_idx(subcat);
-				if (idx == -1) { return;}
-			else {
-				
-				c.getSubcategories().get(idx).addTransaction(T);
-				//update subcategory fields
-				c.getSubcategories().get(idx).out_a += amount;
-				c.getSubcategories().get(idx).out_m += amount;
-				break;
-			}
+		Subcategory sc = this._find_subcat(subcat);
+		if (sc != null) {
+			sc.addTransaction(T);
 		}
 		this.net_a -= amount;
 	}
@@ -354,6 +361,15 @@ public class Budget implements Serializable{
 		this.in_unassigned += monthly_income;
 	}
 	
+	public boolean set_goal(String sc_name, Double amount, Integer month, Integer day, Integer year) {
+		Subcategory sc = this._find_subcat(sc_name);
+		if (sc != null) { //sc exists in budget
+			//not checking whether we have enough money because goals do not allocate (assign) money into bins!
+			sc.set_goal( amount,  month,  day,  year);
+			return true;
+		}
+		return false; //sc dne  in budget
+	}
 	
 	
 	public static void save_data(Budget B) {
@@ -415,10 +431,9 @@ public class Budget implements Serializable{
 	public void printAll() {
 		System.out.println("Net Worth" + "\t\t\t "+ "Unassigned Money\t");
 		System.out.println( "   " + this.net_a.toString() + "  " + "\t\t\t\t" + this.in_unassigned.toString());
-		System.out.println("Net Worth" + "\t\t\t "+ "Unassigned Money\t");
 		System.out.println("----------------------------------------------------------------");
 		System.out.println("\n");
-		System.out.println("\t\t\t"  + "Assigned\t" +  "Spent\t\t" + "Available\t" );
+		System.out.println("\t\t\t"  + "Assigned\t" +  "Spent\t\t" + "Available\t"  + "Goal\t" );
 		for (Category c: this.categories) {
 			c.print();
 		}

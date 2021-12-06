@@ -8,7 +8,6 @@ public class Subcategory implements Serializable{
 	private String name; //name of the category
 	protected Double out_a = 0.00; //out_a : money out SINCE CATEGORY INCEPTION
 	protected Double out_m = 0.00; 
-	protected Double in_m = 0.00; //money in THIS MONTH; 
 	protected Double in_a = 0.00; //money in all time
 	protected Double assigned = 0.00; //money that's assigned this month
 	protected GoalByDate goal; //goal is optional, used to save up money for things; goals doesn't actually assign money though. 
@@ -20,9 +19,8 @@ public class Subcategory implements Serializable{
 	
 	public Subcategory(String name, Double amount) {
 		this.name = name;
-		this.in_m += amount;
-		this.in_a += amount;
 		this.assigned = amount;
+		this.in_a = amount;
 	}
 	
 	public Subcategory(String name) {
@@ -43,13 +41,8 @@ public class Subcategory implements Serializable{
 		return this.goal;
 	}
 	
-	public void set_monthly_in(Double amount) {
-		this.in_m = amount;
-		this.in_a += amount;
-	}
-	public Double get_monthly_in() {
-		return this.in_m;
-	}
+	
+	
 	
 	public Double get_available() {
 		return this.in_a - this.out_a;
@@ -58,8 +51,6 @@ public class Subcategory implements Serializable{
 	public void addTransaction(Transaction transaction) {
 		this.transactionList.add(transaction);
 		this.in_a -= transaction.getAmount();
-		this.in_m -= transaction.getAmount();
-		this.out_a += transaction.getAmount();
 		this.out_m += transaction.getAmount();
 		
 	}
@@ -106,16 +97,24 @@ public class Subcategory implements Serializable{
 		return balanceLeft;
 	}
 	
-	public void print() { //name, amount assigned this month, amount spend, amount available
-		Double net_a = this.in_m - this.out_a;
-		//						name						assigned 						
-		System.out.println(this.format_name() + "\t" + this.assigned.toString() + "\t\t"
-		//spent 					avaialble
-		+ out_m.toString() + "\t\t" + net_a.toString());
+	public void print() { //name, amount assigned this month, amount spent, amount available
+		//Double net_a = this.in_a - this.out_a;
+		
+		if (this.goal == null) {
+//									name					assigned 						spent 					avaialble					goal							
+			System.out.println(
+					this.format_name() + "\t" + this.assigned.toString() + "\t\t" + out_m.toString() + "\t\t" + in_a.toString());
+		}
+		else {
+//									name					assigned 						spent 					avaialble					goal							
+			System.out.println(
+					this.format_name() + "\t" + this.assigned.toString() + "\t\t" + out_m.toString() + "\t\t" + in_a.toString() + "\t\t" + this.goal.get_amt_m().toString());
+		}
+		
 	}
 	
 	public void reset() {
-		this.in_m = 0.00;
+		this.assigned = 0.00;
 		this.out_m = 0.00;
 	}
 	
@@ -133,7 +132,7 @@ public class Subcategory implements Serializable{
 		for (Transaction t: this.transactionList) {
 			src.addTransaction(t);
 		}
-		src.in_m += this.in_m;
+		src.assigned += this.assigned;
 		src.out_m += this.out_m;
 		src.out_a += this.in_a;
 		src.in_a += this.in_a;

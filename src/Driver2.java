@@ -29,25 +29,30 @@ public class Driver2 {
 		
 	//adding transactions
 		B.add_transaction("groceries", 100.00);
+		B.printAll();
 		//System.out.println("\nBudget after adding a transaction");
 		//B.print();	
 		//System.out.println("\ntesting rename");
 		B.rename_subcategory("groceries", "Groceries");
 		//B.print();
-		Subcategory sc1 = B._find_subcat("Groceries"); //find subcat works!!
 
 		//System.out.println("\ntesting delete");
-		System.out.println("\ntesting delete");
+		//System.out.println("\ntesting delete");
 		//B.print();
 		//Integer cat = B._find_subcat_idx("Groceries"); //find subcatidx works!!
 		//delete subcategory
 		B.add_subcategory("Kitchen", "Booze", 300.00); 
+		
 		B.printAll();
 		//B.delete_subcategory("Booze", "Groceries"); //delete works!
 		B.printAll();
-		B.assign("Groceries", 100);
+		B.assign("Groceries", 120.00);
+		B.add_category("Large Purchases");
+		B.add_subcategory("Large Purchases", "newCar");
+		B.set_goal("newCar", 10000.00, 12, 31, 2025);
+		B.printAll();
 		/*
-		 Budget b2 = new Budget();
+		Budget b2 = new Budget();
 		b2.set_monthly_in(100.00);
 		b2.add_category("Kitchen");
 		b2.add_category("Utilities");
@@ -62,9 +67,10 @@ public class Driver2 {
 		new_car.set_goal(10000.00, 12, 31, 2025);
 		String goal_msg = new_car.display_goal_info();
 		System.out.println(goal_msg);
+		
 		 */
 		
-		
+	 	
 	}
 	
 }

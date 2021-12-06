@@ -37,9 +37,10 @@ public class  GoalByDate extends Goal {
 		this.amount = amount;
 		this.amt_m = calc_amt_m();
 	}
-	Date get_date() {
+	public Date get_date() {
 		return this.goalDate;
 	}
+	
 	private Double format_amt_m(Double amt) {
 		DecimalFormat df = new DecimalFormat("#.##");
 		return Double.parseDouble(df.format(amt));
