@@ -69,8 +69,8 @@ public class Budget implements Serializable{
 			}	
 		}
 		else { //we do not have this amount. 
-			System.out.println("You have " + this.net_a.toString() + " . You can't assign what you don't have");
-			System.out.println("Options: move money from another category, or assign at most " + this.net_a.toString());
+			System.out.println("You have " + (this.net_a-this.in_unassigned) + " . You can't assign what you don't have");
+			System.out.println("Options: move money from another category, or assign at most " + (this.net_a-this.in_unassigned));
 			return false;
 		}
 	}
@@ -110,8 +110,9 @@ public class Budget implements Serializable{
 	}
 	
 	
-	public boolean assign(String subcategory, Double amount ) {
-		Subcategory sc = this._find_subcat(subcategory);
+	public boolean assign(String subcategory, double amount ) {
+		if (this.in_unassigned >= amount) {
+			Subcategory sc = this._find_subcat(subcategory);
 			if (sc != null) {
 				if (this.net_a >= amount) {
 					if (sc.assigned == 0.00) { 
@@ -140,7 +141,11 @@ public class Budget implements Serializable{
 				
 				
 			
-	
+		else {
+			System.out.println("You have " + (this.net_a-this.in_unassigned) + " . You can't assign what you don't have");
+			System.out.println("Options: move money from another category, or assign at most " + (this.net_a-this.in_unassigned));
+			return false;
+		}
 	}
 	
 	private void reassign(Subcategory sc, Double amt_new) {
@@ -347,10 +352,11 @@ public class Budget implements Serializable{
 		}
 	}
 	
-	public void reset() {
+	public void reset(boolean force_reset) {
 		boolean reset = is_reset_time();
-		if (reset) {
+		if (reset || force_reset) {
 			for (Category c: this.categories) {
+				//System.out.println("RESET");
 				c.reset();
 			}
 		}
@@ -358,7 +364,12 @@ public class Budget implements Serializable{
 	public void set_monthly_in(Double monthly_income) {
 		this.in_m = monthly_income;
 		this.net_a += monthly_income;
-		this.in_unassigned += monthly_income;
+		this.in_unassigned = monthly_income;
+	}
+	public void inc_monthly_in(Double inc_income) {
+		this.in_m += inc_income;
+		this.net_a += inc_income;
+		this.in_unassigned += inc_income;
 	}
 	
 	public boolean set_goal(String sc_name, Double amount, Integer month, Integer day, Integer year) {
@@ -407,11 +418,31 @@ public class Budget implements Serializable{
 		return B;
 	}
 	
+	public double getTotalTransactions() {
+		double total = 0;
+		for (Category c : this.categories) {
+			for (Subcategory sc : c.subcategories) {
+				for (Transaction t : sc.getTransactionList()) {
+					total = total + t.getAmount();
+				}
+			}
+		}
+		return total;
+	}
+	
 	public void printCategoryInfo() {
+		System.out.println("Total Savings/Checkings: $"+this.net_a);
+		System.out.println("This month's paycheck: $"+this.in_m);
+		System.out.println("This month's assigned money: $"+(this.in_m-this.in_unassigned));
+		System.out.println("This month's total transaction costs: $"+this.getTotalTransactions()+"\n\n");
 		for (Category c : this.categories) {
 			System.out.println("Category: "+c.getName());
 			for (Subcategory sc : c.subcategories) {
-				System.out.println("  "+"Subcategory: "+sc.getName());
+				double total = 0;
+				for (Transaction t : sc.getTransactionList()) {
+					total = total + t.getAmount();
+				}
+				System.out.println("  "+"Subcategory: "+sc.getName()+" [Assigned: $"+sc.in_m+" Spent: $"+total+"]");
 				for (Transaction t : sc.getTransactionList()) {
 					System.out.println("    "+t.getDate()+"  "+t.getPayee().getName()+"  {"+t.getDescription()+"}  $"+t.getAmount());
 				}
@@ -438,6 +469,21 @@ public class Budget implements Serializable{
 			c.print();
 		}
 	}
+	
+	public void printPayeeInfo() {
+		System.out.println("Transactions Listed By Payee");
+		for (Payee p : this.payeeList) {
+			double total = 0;
+			for (Transaction t : p.payeetransactionList) {
+				total = total + t.getAmount();
+			}
+			System.out.println(p.getName()+" {"+p.getDescription()+"}"+" Total Spent: $"+total);
+			for (Transaction t : p.payeetransactionList) {
+				System.out.println("    "+t.getDate()+"  {"+t.getDescription()+"}  $"+t.getAmount());
+			}
+		}
+	}
+	
 	
 }//end class def 
 
