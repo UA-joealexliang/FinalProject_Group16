@@ -1,0 +1,13 @@
+class Category
+# subcategories: ArrayList<Subcategory>
++ Category(name:String) : 
++ setName(name:String) : void
++ getName() : String
++ category(category_name:String) : double
++ add_subcategory(sc:Subcategory) : void
++ print() : void
++ getSubcategories() : ArrayList<Subcategory>
+# _find_subcategory_idx(name:String) : Integer
+# _find_subcategory(name:String) : Subcategory
++ reset() : void
++ delete_subcategory(sc:String) : void

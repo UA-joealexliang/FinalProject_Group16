@@ -15,6 +15,7 @@ public class Subcategory implements Serializable{
 	// better explained mathematically:
 	private ArrayList<Transaction> alltransactionList = new ArrayList<Transaction>();
 	private ArrayList<Transaction> transactionList = new ArrayList<Transaction>();
+	private Double availableFunds; //availableFunds is money in_m to the category
 	//rename availableFunds to net_a?? 
 	
 	public Subcategory(String name, Double amount) {
@@ -33,9 +34,16 @@ public class Subcategory implements Serializable{
 	public String getName() {
 		return this.name;
 	}
-	public void set_goal(Double amount, Integer month, Integer day, Integer year) {
-		this.goal = new GoalByDate(amount, month, day, year);
+	
+	
+	
+	
+	public Goal getGoal() {
+		return this.goal;
 	}
+	
+	
+	
 	
 	public Double get_available() {
 		return this.in_a - this.out_a;
@@ -51,9 +59,8 @@ public class Subcategory implements Serializable{
 	public ArrayList<Transaction> getTransactionList() {
 		return this.transactionList;
 	}
-	protected Goal getGoal() {
-		return this.goal;
-	}
+	
+	// public Double getCharges(String from, String to){ } 
 	
 	//2nd way to keep track of monthly spending 
 	public Double get_money_out() {  
@@ -62,6 +69,16 @@ public class Subcategory implements Serializable{
 			this.out_a = this.out_a + transaction.getAmount();
 		}
 		return this.out_a;
+	}
+	
+	
+	public Double calculate_goal_deviation() {  
+		return this.goal.amount - this.get_money_out();
+	}
+	
+	//rahel made a different version, intends to discuss 
+	public Double calculate_goal_deviation_() {  
+		return this.goal.amount - this.out_a;
 	}
 	
 	
@@ -108,7 +125,7 @@ public class Subcategory implements Serializable{
 		}
 	}
 	
-	private String format_name() { //name, amount in_m this month, amount spend, amount available
+	public String format_name() { //name, amount in_m this month, amount spend, amount available
 		if (this.getName().length() < 9) {
 			return this.getName() +  "       ";
 		}
@@ -138,7 +155,9 @@ public class Subcategory implements Serializable{
 		src.transactionList = null;
 		*/
 	}
-	
+	public void set_goal(Double amount, Integer month, Integer day, Integer year) {
+		this.goal = new GoalByDate(amount, month, day, year);
+	}
 	
 	public String display_goal_info() {
 		if (this.goal != null) {

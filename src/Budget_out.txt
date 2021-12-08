@@ -1,0 +1,42 @@
++ Serializable() : class
++ categories : ArrayList<Category>
++ payeeList : ArrayList<Payee>
++ net_a() : Double
++ in_m() : Double
++ in_unassigned() : Double
++ name() : String
++ setName(name:String) : void
++ getName() : String
++ get_total_balance(:void) : double
++ add_category(cat:String) : boolean
++ add_subcategory(parent:String, name:String, amount:double) : boolean
++ add_subcategory(parent:String, name:String) : boolean
++ move_money(src:String, dst:String) : boolean
++ assign(subcategory:String, amount:Double) : boolean
+- reassign(sc:Subcategory, amt_new:Double) : void
++ cat.(cat:String) : Integer
++ _find_cat_s(subcat:String) : Category
++ _find_cat_c(cat:String) : Category
++ subcat(subcat:String) : Subcategory
++ rename_subcategory(oldname:String, newname:String) : void
++ delete_subcategory(to_del:String, to_move:String) : boolean
++ getCategory(name:String) : Category
++ getSubcategory(parent:String, child:String) : Subcategory
++ subcat(subcat:String) : Integer
++ getPayee(payeeName:String) : Payee
++ add_transaction(subcat:String, amount:double) : void
+- _find_category_idx_c(cat_name:String) : int
+- _is1st() : boolean
+- _is_before(hour:int) : boolean
++ is_reset_time() : boolean
++ reset(force_reset:boolean) : void
++ set_monthly_in(monthly_income:Double) : void
++ inc_monthly_in(inc_income:Double) : void
++ set_goal(sc_name:String, amount:Double, month:Integer, day:Integer, year:Integer) : boolean
++ save_data(B:Budget) : static
++ load_data(budgetUser:String) : static
++ getTotalTransactions() : double
++ printCategoryInfo() : void
++ print_category_info(cat:String) : void
++ printAll() : void
++ printPayeeInfo() : void

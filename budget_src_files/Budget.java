@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import Software.Category;
-
 public class Budget implements Serializable{
 	public ArrayList<Category> categories = new ArrayList<Category>();
 	public ArrayList<Payee> payeeList = new ArrayList<Payee>();
@@ -184,7 +182,7 @@ public class Budget implements Serializable{
 			//System.out.println("no matching categories found. check spelling or create a new subcategory" + subcat);
 			return null;
 	}
-	private Category _find_cat_c(String cat) { 
+	public Category _find_cat_c(String cat) { 
 		for (Category c: this.categories) {
 			if (c.getName().equals(cat)) {
 				return c;
@@ -194,7 +192,7 @@ public class Budget implements Serializable{
 			return null;
 	}
 	
-	private Subcategory _find_subcat(String subcat) { //finds the index of the CATEGORY that holds subcat
+	public Subcategory _find_subcat(String subcat) { //finds the index of the CATEGORY that holds subcat
 		Subcategory sc = null;
 		Category cc = null;
 		for (Category c: this.categories) {
@@ -215,13 +213,6 @@ public class Budget implements Serializable{
 				c.subcategories.get(idx).setName(newname);
 				return;
 			}
-		}
-		System.out.println("subcateogry " + oldname + " does not exist.");
-	}
-	public void rename_category(String oldname, String newname) {
-		Category c = this._find_cat_c(oldname);
-		if (c != null) {
-			c.setName(newname);
 		}
 		System.out.println("subcateogry " + oldname + " does not exist.");
 	}
@@ -247,7 +238,32 @@ public class Budget implements Serializable{
 		}		
 	}
 	
-	private Integer _find_cat_idx_s(String subcat) { //finds the index of the CATEGORY that holds subcat
+	public Category getCategory(String name) {
+		Category c = null;
+		for (Category category : this.categories) {
+			if (category.getName() == name) {
+				c = category;
+			}
+		}
+		return c;
+	}
+	
+	public Subcategory getSubcategory(String parent, String child) {
+		Subcategory sc = null;
+		for (Category category : this.categories) {
+			if (parent.equals(category.getName())) {
+				for (Subcategory subcategory : category.subcategories) {
+					if (child.equals(subcategory.getName())) {
+						sc = subcategory;
+					}
+				}
+			}
+		}
+		return sc;
+	}
+	
+	
+	public Integer _find_cat_idx_s(String subcat) { //finds the index of the CATEGORY that holds subcat
 		Integer subcat_idx = 0; 
 		Integer catidx = 0;
 		for (Category c: this.categories) {
@@ -283,6 +299,17 @@ public class Budget implements Serializable{
 		this.net_a -= amount;
 	}
 	
+	private  int _find_category_idx_c(String cat_name) {
+		int i = 0;
+		for (Category c: this.categories) {
+			if (c.getName().equals(cat_name)) {
+				return i;
+			}
+			i = i+1; 
+		}
+		System.out.println("no matching categories found. check spelling or create a new subcategory" + cat_name);
+		return -1;
+	}
 	
 	//check if it's the 1st of the month
 	private boolean _is1st() { 
@@ -323,7 +350,7 @@ public class Budget implements Serializable{
 		}
 	}
 	
-	private void reset(boolean force_reset) {
+	public void reset(boolean force_reset) {
 		boolean reset = is_reset_time();
 		if (reset || force_reset) {
 			for (Category c: this.categories) {

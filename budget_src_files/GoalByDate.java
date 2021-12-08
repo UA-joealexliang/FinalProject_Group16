@@ -45,21 +45,12 @@ public class  GoalByDate extends Goal {
 	public Date get_date() {
 		return this.goalDate;
 	}
-	public void edit_date(Integer month, Integer day, Integer year) {
-		Calendar calendar = new GregorianCalendar(year, month-1, day);
-		this.goalDate = calendar.getTime();
-		this.amt_m = format_amt_m(calc_amt_m());
-	}
-	public void edit_amount(Double amt) {
-		this.amount = amt;
-		this.amt_m = format_amt_m(calc_amt_m());
-	}
 	
 	private Double format_amt_m(Double amt) {
 		DecimalFormat df = new DecimalFormat("#.##");
 		return Double.parseDouble(df.format(amt));
 	}
-	private String format_date() {
+	protected String format_date() {
 		SimpleDateFormat sdf = new SimpleDateFormat("MMMMM d, yyyy");
 		String simple_date = sdf.format(this.goalDate); 
 		return simple_date;
@@ -69,5 +60,4 @@ public class  GoalByDate extends Goal {
 		return "you need to assign $" + this.get_amt_m().toString() + " to reach your goal of $" + this.get_amount().toString()  
 		+ " by " + this.format_date();
 	}
-	
 }

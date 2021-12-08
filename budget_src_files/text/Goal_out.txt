@@ -1,0 +1,4 @@
+class Goal
++ amount() : Double
++ set_amount(amount:double) : void
++ get_amount() : Double

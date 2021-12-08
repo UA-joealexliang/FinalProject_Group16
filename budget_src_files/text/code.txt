@@ -1,0 +1,8 @@
+Subcategory = UML_convert("/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/Subcategory.java" , "/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/Subcategory_out.txt")
+Category = UML_convert("/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/Category.java" , "/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/Category_out.txt")
+Budget = UML_convert("/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/Budget.java" , "/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/Budget_out.txt")
+BudgetGUI = UML_convert("/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/BudgetGUI.java" , "/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/BudgetGUI_out.txt")
+Payee = UML_convert("/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/Payee.java" , "/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/Payee_out.txt")
+GoalByDate = UML_convert("/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/GoalByDate.java" , "/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/GoalByDate_out.txt")
+Goal = UML_convert("/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/Goal.java" , "/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/Goal_out.txt")
+Transaction = UML_convert("/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/Transaction.java" , "/Users/rahelmizrahi/Desktop/ECE_373/FinalProject_Group16/budget_src_files/Transaction_out.txt")

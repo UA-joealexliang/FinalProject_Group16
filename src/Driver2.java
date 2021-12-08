@@ -1,76 +1,81 @@
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
+
 
 public class Driver2 {
 	public static void main(String[] args) {
-		/*
-
-		*/
-		//1. create a new Budget
+	
+	//1. create a new Budget
 		//Budget holds categories, which hold subcategories. 
 		Budget B = new Budget(); 
-	// 2. set the monthly cash inflow. 
+	// 2. set the monthly cash inflow. (use case #5)
 		B.set_monthly_in(3000.00); 
-	// 3. set (or add) broad categories
-		// The Category class holds and organizes subcategories. 
+	// 3. set (or add) broad categories (use case #1)
+	// The Category class holds and organizes subcategories. 
 		B.add_category("Kitchen");
 		
 		B.add_category("Utilities");
 		
 		B.add_category("Transportation");
-	//4. add subcategories. 
+	//4. add subcategories.  (use case #2)
+	//when the user adds subcategories, they are assigning every penny to a certain "bin.",
+	//each bin is a subcateogry. 
+	//when the user creates a new subcateorgy and assigns money to it, they are taking money 
+	//from their unassigned "jar" and placing into a new subcategory jar. 
+	//thus, by adding subcategories , the user achieves 
+	//use case #4, allocating an amount to a subcategory, for the month
+		
 		//1st field is parent category, 2nd field is the subcategory name, 
 		//3rd field is the amount you want to assign for the month. 
 		B.add_subcategory("Kitchen", "groceries", 1000.00);
 		B.add_subcategory("Kitchen","new pots", 100.00);
 		B.add_subcategory("Utilities", "electricity", 100.00);
+		B.add_subcategory("Utilities", "gas", 40.00);
+		B.add_subcategory("Utilities", "WiFi", 40.00);
 		B.add_subcategory("Transportation", "Gas", 30.00);
+	//we can aslo create subcategories and assign an amount leter
+		B.add_subcategory("Transportation", "Car Insurance");
+		B.printAll();	
+	//adding transactions, (use case #6)
+		System.out.println("\nadding transactions");
+		B.add_transaction("groceries", 100.00);
+		B.add_subcategory("Utilities", "gas", 40.00);
+		System.out.println("\nBudget after adding a transaction");
+		//printing shows whehter subcategiries are over or under-budgeted (use case #7)
 		B.printAll();	
 		
-	//adding transactions
-		B.add_transaction("groceries", 100.00);
-		B.printAll();
-		//System.out.println("\nBudget after adding a transaction");
-		//B.print();	
-		//System.out.println("\ntesting rename");
+	//rename subcategories  (use case #8)
+		System.out.println("\ntesting rename subcategory");
 		B.rename_subcategory("groceries", "Groceries");
-		//B.print();
-
-		//System.out.println("\ntesting delete");
-		//System.out.println("\ntesting delete");
-		//B.print();
-		//Integer cat = B._find_subcat_idx("Groceries"); //find subcatidx works!!
-		//delete subcategory
-		B.add_subcategory("Kitchen", "Booze", 300.00); 
+		B.printAll();
+	//rename categories  (use case #9)
+		System.out.println("\ntesting rename subcategory");
+		B.rename_category("Transportation", "Movin Around");
+		B.printAll();
+	//undoing the rename
+		B.rename_category("Movin Around", "Transportation");
+	//deleting subcategories: use case 
+		System.out.println("\ntesting delete");
+		//deleting a subcatory (use case #10)
 		
+		//if we delete a subcateogry, we need to reassign the subcategory's past 
+		//activity to a new category. That is the second argument to delete( ) 
+		B.add_subcategory("Kitchen", "Booze", 300.00); 
 		B.printAll();
 		//B.delete_subcategory("Booze", "Groceries"); //delete works!
+		
+		//deleting Booze will move all of Booze's transactions,
+		// and net available balance to groceries. 
+		B.delete_subcategory("Booze", "Groceries");
 		B.printAll();
-		B.assign("Groceries", 120.00);
-		B.add_category("Large Purchases");
-		B.add_subcategory("Large Purchases", "newCar");
-		B.set_goal("newCar", 10000.00, 12, 31, 2025);
+		
+		//say we now rememebr to assign money to car insurance
+		B.assign("Car Insurance", 100.00);
 		B.printAll();
-		/*
-		Budget b2 = new Budget();
-		b2.set_monthly_in(100.00);
-		b2.add_category("Kitchen");
-		b2.add_category("Utilities");
-		b2.add_category("Transportation");
-		//b2.add_subcategory("Kitchen", "Groceries", 150); //this errors because the user doesn't have enough money
-		b2.assign("Groceries", 150);
 		
-		//testing GoalByDate
-		b2.add_category("Large Purchases");
-		b2.add_subcategory("Large Purchases", "newCar");
-		Subcategory new_car = b2._find_subcat("newCar");
-		new_car.set_goal(10000.00, 12, 31, 2025);
-		String goal_msg = new_car.display_goal_info();
-		System.out.println(goal_msg);
+		System.out.println("\ntesting adjust spending");
+		//if we change our minds about the amount, we can adjust (use case #11)
+		B.assign("Car Insurance", 95.00);
+		B.printAll();
 		
-		 */
-		
-	 	
 	}
 	
 }

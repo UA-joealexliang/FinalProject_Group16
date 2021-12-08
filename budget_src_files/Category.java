@@ -16,6 +16,15 @@ public class Category implements Serializable{
 		return this.name;
 	}
 	
+	public double spending(String category_name) { // sums all transactions in the category 
+		for (Subcategory sc: this.getSubcategories()) {
+			if (sc.getName().equals(category_name)) {
+				return sc.get_money_out()	;		
+			}
+		}
+		System.out.println("no matching category found. make sure you spelled it correctly!");
+		return 0;
+	}
 	
 	public void add_subcategory(Subcategory sc) {
 		this.subcategories.add(sc);
@@ -67,7 +76,7 @@ public class Category implements Serializable{
 		
 	}
 	
-	private void reset() {
+	public void reset() {
 		for (Subcategory sc: this.subcategories) {
 			sc.reset();
 		}

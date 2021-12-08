@@ -1,0 +1,9 @@
+class Payee
+- name : String
+- description: String
++ payeetransactionList: Transaction[1...*]
+
++ setName(name:String) : void
++ getName() : String
++ setDescription(desc:String) : void
++ getDescription() : String

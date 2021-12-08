@@ -1,0 +1,11 @@
++ Goal() : class
+- goalDate() : Date
+- date() : Double
+- goaldate() : int
+- date(_days_between:{ //calls) : Double
++ get_amt_m() : Double
++ set_amt(amount:Double) : void
++ get_date() : Date
+- format_amt_m(amt:Double) : Double
+# format_date() : String
+# get_message() : String
